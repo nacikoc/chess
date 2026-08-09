@@ -145,19 +145,19 @@ private fun SidePanel(vm: GameViewModel, onExit: () -> Unit, modifier: Modifier)
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-            OutlinedButton(onClick = { vm.restart() }, modifier = Modifier.weight(1f)) {
+            FocusButton(onClick = { vm.restart() }, modifier = Modifier.weight(1f)) {
                 Text(stringResource(R.string.new_game))
             }
-            OutlinedButton(onClick = { vm.undo() }, modifier = Modifier.weight(1f)) {
+            FocusButton(onClick = { vm.undo() }, modifier = Modifier.weight(1f)) {
                 Text(stringResource(R.string.undo))
             }
         }
         Spacer(Modifier.height(6.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-            OutlinedButton(onClick = { vm.toggleFlip() }, modifier = Modifier.weight(1f)) {
+            FocusButton(onClick = { vm.toggleFlip() }, modifier = Modifier.weight(1f)) {
                 Text(stringResource(R.string.flip_board))
             }
-            OutlinedButton(onClick = onExit, modifier = Modifier.weight(1f)) {
+            FocusButton(onClick = onExit, modifier = Modifier.weight(1f)) {
                 Text(stringResource(R.string.back))
             }
         }
@@ -300,7 +300,10 @@ private fun PromotionDialog(vm: GameViewModel) {
                     PieceType.BISHOP to "♝",
                     PieceType.KNIGHT to "♞"
                 ).forEach { (type, glyph) ->
-                    TextButton(onClick = { vm.promote(type) }) {
+                    FocusButton(
+                        onClick = { vm.promote(type) },
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(8.dp)
+                    ) {
                         Text(glyph, fontSize = 40.sp, fontFamily = chessFont)
                     }
                 }

@@ -1,8 +1,10 @@
 package com.nakitasarim.chess.ui
 
+import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,13 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -41,6 +44,16 @@ fun HomeScreen(onStart: (GameMode, Side, Int) -> Unit) {
     var level by remember { mutableIntStateOf(4) }
     var side by remember { mutableStateOf(Side.WHITE) }
     val chessFont = rememberChessFont()
+
+    // TV'de açılışta ilk butona odaklan ki kumanda hemen çalışsın
+    val context = LocalContext.current
+    val isTv = remember {
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+    }
+    val firstFocus = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        if (isTv) runCatching { firstFocus.requestFocus() }
+    }
 
     Column(
         modifier = Modifier
@@ -58,11 +71,12 @@ fun HomeScreen(onStart: (GameMode, Side, Int) -> Unit) {
         )
         Spacer(Modifier.height(32.dp))
 
-        Button(
+        FocusButton(
             onClick = { showOptions = !showOptions },
             modifier = Modifier
                 .widthIn(max = 420.dp)
                 .fillMaxWidth()
+                .focusRequester(firstFocus)
         ) {
             Text(stringResource(R.string.play_vs_computer), fontSize = 18.sp)
         }
@@ -79,19 +93,13 @@ fun HomeScreen(onStart: (GameMode, Side, Int) -> Unit) {
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         for (l in 1..8) {
-                            val selectedLevel = l == level
-                            if (selectedLevel) {
-                                FilledTonalButton(
-                                    onClick = { level = l },
-                                    modifier = Modifier.weight(1f),
-                                    contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
-                                ) { Text("$l") }
-                            } else {
-                                OutlinedButton(
-                                    onClick = { level = l },
-                                    modifier = Modifier.weight(1f),
-                                    contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
-                                ) { Text("$l") }
+                            FocusButton(
+                                onClick = { level = l },
+                                modifier = Modifier.weight(1f),
+                                selected = l == level,
+                                contentPadding = PaddingValues(vertical = 10.dp)
+                            ) {
+                                Text("$l", fontSize = 16.sp)
                             }
                         }
                     }
@@ -99,39 +107,39 @@ fun HomeScreen(onStart: (GameMode, Side, Int) -> Unit) {
                     Text(stringResource(R.string.play_as), style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        val whiteSel = side == Side.WHITE
-                        if (whiteSel) {
-                            FilledTonalButton(onClick = { side = Side.WHITE }, modifier = Modifier.weight(1f)) {
-                                Text("♔ " + stringResource(R.string.white))
-                            }
-                        } else {
-                            OutlinedButton(onClick = { side = Side.WHITE }, modifier = Modifier.weight(1f)) {
-                                Text("♔ " + stringResource(R.string.white))
-                            }
+                        FocusButton(
+                            onClick = { side = Side.WHITE },
+                            modifier = Modifier.weight(1f),
+                            selected = side == Side.WHITE
+                        ) {
+                            Text("♔ " + stringResource(R.string.white), fontSize = 16.sp)
                         }
-                        if (!whiteSel) {
-                            FilledTonalButton(onClick = { side = Side.BLACK }, modifier = Modifier.weight(1f)) {
-                                Text("♚ " + stringResource(R.string.black))
-                            }
-                        } else {
-                            OutlinedButton(onClick = { side = Side.BLACK }, modifier = Modifier.weight(1f)) {
-                                Text("♚ " + stringResource(R.string.black))
-                            }
+                        FocusButton(
+                            onClick = { side = Side.BLACK },
+                            modifier = Modifier.weight(1f),
+                            selected = side == Side.BLACK
+                        ) {
+                            Text("♚ " + stringResource(R.string.black), fontSize = 16.sp)
                         }
                     }
                     Spacer(Modifier.height(16.dp))
-                    Button(
+                    FocusButton(
                         onClick = { onStart(GameMode.VS_COMPUTER, side, level) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        primary = true
                     ) {
-                        Text(stringResource(R.string.start_game), fontSize = 16.sp)
+                        Text(
+                            stringResource(R.string.start_game),
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
                 }
             }
         }
 
         Spacer(Modifier.height(12.dp))
-        OutlinedButton(
+        FocusButton(
             onClick = { onStart(GameMode.TWO_PLAYERS, Side.WHITE, 1) },
             modifier = Modifier
                 .widthIn(max = 420.dp)
