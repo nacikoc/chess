@@ -36,6 +36,14 @@ android {
     buildFeatures {
         compose = true
     }
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a")
+            isUniversalApk = false
+        }
+    }
     packaging {
         jniLibs {
             // Stockfish calistirilabilir dosyasinin diske cikarilmasi icin gerekli
