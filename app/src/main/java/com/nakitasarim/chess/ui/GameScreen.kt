@@ -78,10 +78,12 @@ fun GameScreen(vm: GameViewModel, onExit: () -> Unit) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val isWide = maxWidth > maxHeight
         if (isWide) {
+            // Tablet/TV: panel genişliği ekranla orantılı büyür
+            val panelWidth = (maxWidth * 0.28f).coerceIn(260.dp, 400.dp)
             Row(Modifier.fillMaxSize().padding(12.dp)) {
                 ChessBoard(vm, Modifier.weight(1f).fillMaxHeight())
                 Spacer(Modifier.width(12.dp))
-                SidePanel(vm, onExit, Modifier.width(280.dp).fillMaxHeight())
+                SidePanel(vm, onExit, Modifier.width(panelWidth).fillMaxHeight())
             }
         } else {
             Column(Modifier.fillMaxSize().padding(8.dp)) {

@@ -18,6 +18,7 @@
         android:theme="@style/Theme.Chess">
         <activity
             android:name=".MainActivity"
+            android:resizeableActivity="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboard|keyboardHidden|navigation"
             android:exported="true">
             <intent-filter>
