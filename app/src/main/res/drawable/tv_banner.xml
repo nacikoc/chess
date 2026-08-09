@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path
+        android:fillColor="#1E4032"
+        android:pathData="M0,0 h320 v180 h-320 z" />
+    <!-- mini satranc tahtasi deseni -->
+    <path
+        android:fillColor="#2A5544"
+        android:pathData="M40,50 h20 v20 h-20 z M80,50 h20 v20 h-20 z M60,70 h20 v20 h-20 z M40,90 h20 v20 h-20 z M80,90 h20 v20 h-20 z M60,110 h20 v20 h-20 z" />
+    <!-- kale -->
+    <path
+        android:fillColor="#E8C888"
+        android:pathData="M196,52 h12 v10 h9 v-10 h12 v10 h9 v-10 h12 v20 h-7 l4,32 h7 v14 h-62 v-14 h7 l4,-32 h-7 z" />
+</vector>

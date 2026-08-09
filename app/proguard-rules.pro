@@ -1,0 +1,2 @@
+# chesslib
+-keep class com.github.bhlangonijr.chesslib.** { *; }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Chess" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#FF171512</item>
+        <item name="android:statusBarColor">#FF171512</item>
+    </style>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chess</string>
+    <string name="play_vs_computer">Play vs Computer</string>
+    <string name="play_two_players">Two Players</string>
+    <string name="difficulty">Difficulty</string>
+    <string name="play_as">Play as</string>
+    <string name="white">White</string>
+    <string name="black">Black</string>
+    <string name="start_game">Start Game</string>
+    <string name="new_game">New Game</string>
+    <string name="undo">Undo</string>
+    <string name="flip_board">Flip Board</string>
+    <string name="white_to_move">White to move</string>
+    <string name="black_to_move">Black to move</string>
+    <string name="checkmate_white_wins">Checkmate! White wins</string>
+    <string name="checkmate_black_wins">Checkmate! Black wins</string>
+    <string name="stalemate">Stalemate — Draw</string>
+    <string name="draw">Draw</string>
+    <string name="check">Check!</string>
+    <string name="thinking">Thinking…</string>
+    <string name="promotion_title">Promotion — choose a piece</string>
+    <string name="back">Back</string>
+</resources>
