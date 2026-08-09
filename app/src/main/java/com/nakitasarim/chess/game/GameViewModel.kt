@@ -18,6 +18,7 @@ import com.github.bhlangonijr.chesslib.move.MoveList
 import com.nakitasarim.chess.engine.ChessAi
 import com.nakitasarim.chess.engine.EngineFactory
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 enum class GameMode { VS_COMPUTER, TWO_PLAYERS }
@@ -138,7 +139,11 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             thinking = true
             try {
                 val ai = engine ?: EngineFactory.create(getApplication()).also { engine = it }
+                val start = System.currentTimeMillis()
                 val uci = ai.bestMove(board.fen, level)
+                // Hamle göz ile takip edilebilsin diye en az ~1 sn düşünme süresi göster
+                val elapsed = System.currentTimeMillis() - start
+                if (elapsed < 1000) delay(1000 - elapsed)
                 if (uci != null && result == null) {
                     applyMove(Move(uci, board.sideToMove))
                 }

@@ -57,6 +57,7 @@ import com.nakitasarim.chess.ui.theme.BoardLight
 import com.nakitasarim.chess.ui.theme.FocusColor
 import com.nakitasarim.chess.ui.theme.HighlightLast
 import com.nakitasarim.chess.ui.theme.HighlightSelected
+import com.nakitasarim.chess.ui.theme.SelectedBorder
 
 @Composable
 fun rememberChessFont(): FontFamily =
@@ -207,7 +208,12 @@ private fun BoardCell(vm: GameViewModel, square: Square, cell: Dp, chessFont: Fo
             .size(cell)
             .background(base)
             .then(if (isLast) Modifier.background(HighlightLast) else Modifier)
-            .then(if (isSelected) Modifier.background(HighlightSelected) else Modifier)
+            .then(
+                if (isSelected) Modifier
+                    .background(HighlightSelected)
+                    .border(cell / 10, SelectedBorder)
+                else Modifier
+            )
             .then(
                 if (focused) Modifier.border(cell / 16, FocusColor)
                 else Modifier
