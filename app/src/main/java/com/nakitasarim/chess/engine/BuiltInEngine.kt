@@ -42,20 +42,21 @@ class BuiltInEngine : ChessAi {
             if (moves.isEmpty()) return@withContext null
 
             // En kolay seviyede çoğunlukla rastgele oyna
-            if (level <= 1 && Random.nextFloat() < 0.5f) {
+            if (level <= 1 && Random.nextFloat() < 0.6f) {
                 return@withContext moves.random().toUci()
             }
 
             val depth = when {
-                level <= 2 -> 2
+                level <= 1 -> 1
+                level <= 3 -> 2
                 level <= 5 -> 3
                 else -> 4
             }
             // Düşük seviyelerde skora gürültü ekleyerek hata yaptır
             val noise = when (level) {
-                1 -> 150
-                2 -> 80
-                3 -> 40
+                1 -> 200
+                2 -> 120
+                3 -> 60
                 else -> 0
             }
 

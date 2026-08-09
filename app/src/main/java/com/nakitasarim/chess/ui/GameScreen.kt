@@ -22,17 +22,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.geometry.Offset
@@ -119,12 +120,20 @@ private fun statusText(vm: GameViewModel): String = when (vm.result) {
 @Composable
 private fun SidePanel(vm: GameViewModel, onExit: () -> Unit, modifier: Modifier) {
     Column(modifier) {
-        Text(
-            text = statusText(vm),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(vertical = 6.dp)
-        )
+        Surface(
+            shape = RoundedCornerShape(10.dp),
+            color = Color(0xFF23201B),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 6.dp)
+        ) {
+            Text(
+                text = statusText(vm),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            )
+        }
         val rows = vm.sans.chunked(2)
         val listState = rememberLazyListState()
         LaunchedEffect(rows.size) {
@@ -169,8 +178,15 @@ private fun ChessBoard(vm: GameViewModel, modifier: Modifier) {
     val chessFont = rememberChessFont()
     BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
         val size = if (maxWidth < maxHeight) maxWidth else maxHeight
-        val cell = size / 8
-        Column(Modifier.size(size)) {
+        val cell = (size - 8.dp) / 8
+        Column(
+            Modifier
+                .size(size)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0xFF6B5232))
+                .border(2.dp, Color(0xFF8A6B3F), RoundedCornerShape(10.dp))
+                .padding(4.dp)
+        ) {
             for (row in 0 until 8) {
                 Row {
                     for (col in 0 until 8) {

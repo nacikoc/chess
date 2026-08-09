@@ -21,4 +21,15 @@
     <string name="thinking">Thinking…</string>
     <string name="promotion_title">Promotion — choose a piece</string>
     <string name="back">Back</string>
+    <string name="tagline">Ad-free · Fully offline</string>
+    <string-array name="difficulty_names">
+        <item>Beginner</item>
+        <item>Easy</item>
+        <item>Normal</item>
+        <item>Medium</item>
+        <item>Good</item>
+        <item>Hard</item>
+        <item>Master</item>
+        <item>Grandmaster</item>
+    </string-array>
 </resources>

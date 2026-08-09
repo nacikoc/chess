@@ -21,4 +21,15 @@
     <string name="thinking">Düşünüyor…</string>
     <string name="promotion_title">Terfi — taş seç</string>
     <string name="back">Geri</string>
+    <string name="tagline">Reklamsız · Tamamen çevrimdışı</string>
+    <string-array name="difficulty_names">
+        <item>Acemi</item>
+        <item>Kolay</item>
+        <item>Normal</item>
+        <item>Orta</item>
+        <item>İyi</item>
+        <item>Zor</item>
+        <item>Usta</item>
+        <item>Büyükusta</item>
+    </string-array>
 </resources>
