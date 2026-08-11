@@ -22,6 +22,9 @@
     <string name="promotion_title">Terfi — taş seç</string>
     <string name="back">Geri</string>
     <string name="tagline">Reklamsız · Tamamen çevrimdışı</string>
+    <string name="new_short">Yeni</string>
+    <string name="flip_short">Çevir</string>
+    <string name="exit_short">Çık</string>
     <string-array name="difficulty_names">
         <item>Acemi</item>
         <item>Kolay</item>

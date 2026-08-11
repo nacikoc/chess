@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -87,10 +88,31 @@ fun GameScreen(vm: GameViewModel, onExit: () -> Unit) {
                 SidePanel(vm, onExit, Modifier.width(panelWidth).fillMaxHeight())
             }
         } else {
-            Column(Modifier.fillMaxSize().padding(8.dp)) {
+            // Telefon (dikey): durum + tahta + hamle şeridi, butonlar altta
+            Column(Modifier.fillMaxSize().padding(12.dp)) {
+                StatusChip(vm, Modifier.fillMaxWidth())
+                Spacer(Modifier.height(10.dp))
                 ChessBoard(vm, Modifier.fillMaxWidth())
-                Spacer(Modifier.height(8.dp))
-                SidePanel(vm, onExit, Modifier.weight(1f).fillMaxWidth())
+                Spacer(Modifier.height(10.dp))
+                MoveStrip(vm)
+                Spacer(Modifier.weight(1f))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    FocusButton(onClick = { vm.restart() }, modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.new_short), maxLines = 1)
+                    }
+                    FocusButton(onClick = { vm.undo() }, modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.undo), maxLines = 1)
+                    }
+                    FocusButton(onClick = { vm.toggleFlip() }, modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.flip_short), maxLines = 1)
+                    }
+                    FocusButton(onClick = onExit, modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.exit_short), maxLines = 1)
+                    }
+                }
             }
         }
     }
@@ -118,22 +140,53 @@ private fun statusText(vm: GameViewModel): String = when (vm.result) {
 }
 
 @Composable
+private fun StatusChip(vm: GameViewModel, modifier: Modifier = Modifier) {
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = Color(0xFF23201B),
+        modifier = modifier
+    ) {
+        Text(
+            text = statusText(vm),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        )
+    }
+}
+
+@Composable
+private fun MoveStrip(vm: GameViewModel) {
+    val rows = vm.sans.chunked(2)
+    val state = rememberLazyListState()
+    LaunchedEffect(rows.size) {
+        if (rows.isNotEmpty()) state.animateScrollToItem(rows.size - 1)
+    }
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = Color(0xFF23201B),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        LazyRow(
+            state = state,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+        ) {
+            items(rows.withIndex().toList()) { (i, pair) ->
+                Text(
+                    text = "${i + 1}. ${pair.getOrElse(0) { "" }} ${pair.getOrElse(1) { "" }}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun SidePanel(vm: GameViewModel, onExit: () -> Unit, modifier: Modifier) {
     Column(modifier) {
-        Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = Color(0xFF23201B),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 6.dp)
-        ) {
-            Text(
-                text = statusText(vm),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-            )
-        }
+        StatusChip(vm, Modifier.fillMaxWidth().padding(vertical = 6.dp))
         val rows = vm.sans.chunked(2)
         val listState = rememberLazyListState()
         LaunchedEffect(rows.size) {

@@ -22,6 +22,9 @@
     <string name="promotion_title">Promotion — choose a piece</string>
     <string name="back">Back</string>
     <string name="tagline">Ad-free · Fully offline</string>
+    <string name="new_short">New</string>
+    <string name="flip_short">Flip</string>
+    <string name="exit_short">Exit</string>
     <string-array name="difficulty_names">
         <item>Beginner</item>
         <item>Easy</item>
