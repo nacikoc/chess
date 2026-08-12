@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,6 +59,7 @@ import com.nakitasarim.chess.game.GameViewModel
 import com.nakitasarim.chess.ui.theme.BoardDark
 import com.nakitasarim.chess.ui.theme.BoardLight
 import com.nakitasarim.chess.ui.theme.FocusColor
+import com.nakitasarim.chess.ui.theme.Gold
 import com.nakitasarim.chess.ui.theme.HighlightLast
 import com.nakitasarim.chess.ui.theme.HighlightSelected
 import com.nakitasarim.chess.ui.theme.SelectedBorder
@@ -82,37 +85,39 @@ fun GameScreen(vm: GameViewModel, onExit: () -> Unit) {
         if (isWide) {
             // Tablet/TV: panel genişliği ekranla orantılı büyür
             val panelWidth = (maxWidth * 0.28f).coerceIn(260.dp, 400.dp)
-            Row(Modifier.fillMaxSize().padding(12.dp)) {
+            Row(Modifier.fillMaxSize().safeDrawingPadding().padding(12.dp)) {
                 ChessBoard(vm, Modifier.weight(1f).fillMaxHeight())
                 Spacer(Modifier.width(12.dp))
                 SidePanel(vm, onExit, Modifier.width(panelWidth).fillMaxHeight())
             }
         } else {
-            // Telefon (dikey): durum + tahta + hamle şeridi, butonlar altta
-            Column(Modifier.fillMaxSize().padding(12.dp)) {
-                StatusChip(vm, Modifier.fillMaxWidth())
-                Spacer(Modifier.height(10.dp))
-                ChessBoard(vm, Modifier.fillMaxWidth())
-                Spacer(Modifier.height(10.dp))
-                MoveStrip(vm)
-                Spacer(Modifier.weight(1f))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    FocusButton(onClick = { vm.restart() }, modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.new_short), maxLines = 1)
-                    }
-                    FocusButton(onClick = { vm.undo() }, modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.undo), maxLines = 1)
-                    }
-                    FocusButton(onClick = { vm.toggleFlip() }, modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.flip_short), maxLines = 1)
-                    }
-                    FocusButton(onClick = onExit, modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.exit_short), maxLines = 1)
-                    }
+            // Telefon (dikey): rakip kartı üstte, tahta ortada-aşağıda,
+            // kendi kartın + hamleler + kontroller başparmak menzilinde.
+            val topSide = if (vm.flipped) Side.WHITE else Side.BLACK
+            // Tahtaya kenarlardan 6dp, diğer öğelere 12dp: tahta büyür,
+            // kartlar ve kontroller kenardan rahat bir boşlukta kalır.
+            val inset = Modifier.padding(horizontal = 6.dp)
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .safeDrawingPadding()
+                    .padding(horizontal = 6.dp, vertical = 6.dp)
+            ) {
+                GameTopBar(vm, onExit, inset)
+                Spacer(Modifier.height(6.dp))
+                PlayerBarFor(vm, topSide, inset.fillMaxWidth())
+                // Tahta artan boşluğun tamamını yutar; boşluğun çoğu üstte
+                // bırakılarak tahta başparmağın rahat eriştiği banda iner.
+                Column(Modifier.weight(1f).fillMaxWidth()) {
+                    Spacer(Modifier.weight(0.62f))
+                    ChessBoard(vm, Modifier.fillMaxWidth())
+                    Spacer(Modifier.weight(0.38f))
                 }
+                PlayerBarFor(vm, topSide.flip(), inset.fillMaxWidth())
+                Spacer(Modifier.height(8.dp))
+                MoveStrip(vm, inset)
+                Spacer(Modifier.height(8.dp))
+                ActionDock(vm, inset)
             }
         }
     }
@@ -155,57 +160,207 @@ private fun StatusChip(vm: GameViewModel, modifier: Modifier = Modifier) {
     }
 }
 
+/** Telefonun üst çubuğu: çıkış (kazara basılmasın diye en uzak köşede), başlık, hamle sayacı. */
 @Composable
-private fun MoveStrip(vm: GameViewModel) {
+private fun GameTopBar(vm: GameViewModel, onExit: () -> Unit, modifier: Modifier = Modifier) {
+    val chessFont = rememberChessFont()
+    Box(
+        modifier
+            .fillMaxWidth()
+            .height(44.dp)
+    ) {
+        FocusButton(
+            onClick = onExit,
+            modifier = Modifier.align(Alignment.CenterStart),
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+        ) {
+            Text("←", fontFamily = chessFont, fontSize = 17.sp)
+        }
+        Row(
+            modifier = Modifier.align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("♞", fontFamily = chessFont, fontSize = 17.sp, color = Gold)
+            Spacer(Modifier.width(7.dp))
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 2.sp
+            )
+        }
+        Text(
+            text = "${vm.sans.size / 2 + 1}.",
+            style = MaterialTheme.typography.labelLarge,
+            color = Color(0xFF9A9184),
+            modifier = Modifier.align(Alignment.CenterEnd)
+        )
+    }
+}
+
+/**
+ * Hamle şeridi. Oyun bitince aynı yükseklikte altın sonuç afişine dönüşür,
+ * böylece sonuç "Yeni" düğmesinin hemen üstünde, başparmak menzilinde belirir.
+ * Hamle yokken boş çubuk yerine ipucu gösterir.
+ */
+@Composable
+private fun MoveStrip(vm: GameViewModel, modifier: Modifier = Modifier) {
+    if (vm.result != null) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = Gold,
+            modifier = modifier
+                .fillMaxWidth()
+                .height(46.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 14.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = statusText(vm),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF2A2415)
+                )
+            }
+        }
+        return
+    }
     val rows = vm.sans.chunked(2)
     val state = rememberLazyListState()
     LaunchedEffect(rows.size) {
         if (rows.isNotEmpty()) state.animateScrollToItem(rows.size - 1)
     }
     Surface(
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(12.dp),
         color = Color(0xFF23201B),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .height(46.dp)
     ) {
-        LazyRow(
-            state = state,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
-        ) {
-            items(rows.withIndex().toList()) { (i, pair) ->
+        if (rows.isEmpty()) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    text = "${i + 1}. ${pair.getOrElse(0) { "" }} ${pair.getOrElse(1) { "" }}",
+                    text = stringResource(R.string.first_move_hint),
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1
+                    color = Color(0xFF8A8276)
                 )
             }
+        } else {
+            LazyRow(
+                state = state,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 10.dp)
+            ) {
+                items(rows.withIndex().toList()) { (i, pair) ->
+                    val isLast = i == rows.size - 1
+                    Text(
+                        text = "${i + 1}. ${pair.getOrElse(0) { "" }} ${pair.getOrElse(1) { "" }}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (isLast) Gold else Color(0xFFCFC7B8),
+                        fontWeight = if (isLast) FontWeight.SemiBold else FontWeight.Normal,
+                        maxLines = 1,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(7.dp))
+                            .background(if (isLast) Gold.copy(alpha = 0.14f) else Color(0x14FFFFFF))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Alt kontrol yuvası. Sık kullanılan "Geri Al" sağda — sağ başparmağın
+ * doğal dinlenme noktası; "Yeni" en solda, yanlışlıkla basmak zor.
+ */
+@Composable
+private fun ActionDock(vm: GameViewModel, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(66.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        DockButton("↻", stringResource(R.string.new_short), Modifier.weight(1f), primary = vm.result != null) {
+            vm.restart()
+        }
+        DockButton("⇅", stringResource(R.string.flip_short), Modifier.weight(1f)) { vm.toggleFlip() }
+        DockButton("↺", stringResource(R.string.undo), Modifier.weight(1.25f)) { vm.undo() }
+    }
+}
+
+@Composable
+private fun DockButton(
+    glyph: String,
+    label: String,
+    modifier: Modifier,
+    primary: Boolean = false,
+    onClick: () -> Unit
+) {
+    val chessFont = rememberChessFont()
+    FocusButton(
+        onClick = onClick,
+        modifier = modifier.fillMaxHeight(),
+        primary = primary,
+        contentPadding = PaddingValues(vertical = 6.dp)
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(glyph, fontFamily = chessFont, fontSize = 20.sp)
+            Spacer(Modifier.height(2.dp))
+            Text(label, fontSize = 11.sp, maxLines = 1)
         }
     }
 }
 
 @Composable
 private fun SidePanel(vm: GameViewModel, onExit: () -> Unit, modifier: Modifier) {
+    // Tahtanın üstündeki taraf: çevrilmemişse siyah üstte durur.
+    val topSide = if (vm.flipped) Side.WHITE else Side.BLACK
     Column(modifier) {
+        PlayerBarFor(vm, topSide, Modifier.fillMaxWidth())
         StatusChip(vm, Modifier.fillMaxWidth().padding(vertical = 6.dp))
         val rows = vm.sans.chunked(2)
         val listState = rememberLazyListState()
         LaunchedEffect(rows.size) {
             if (rows.isNotEmpty()) listState.animateScrollToItem(rows.size - 1)
         }
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
+        Box(
+            Modifier
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            items(rows.withIndex().toList()) { (i, pair) ->
+            if (rows.isEmpty()) {
                 Text(
-                    text = "${i + 1}. ${pair.getOrElse(0) { "" }}  ${pair.getOrElse(1) { "" }}",
+                    text = stringResource(R.string.first_move_hint),
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    color = Color(0xFF8A8276),
+                    modifier = Modifier.align(Alignment.Center)
                 )
+            } else {
+                LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+                    items(rows.withIndex().toList()) { (i, pair) ->
+                        Text(
+                            text = "${i + 1}. ${pair.getOrElse(0) { "" }}  ${pair.getOrElse(1) { "" }}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        )
+                    }
+                }
             }
         }
+        PlayerBarFor(vm, topSide.flip(), Modifier.fillMaxWidth().padding(bottom = 8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             FocusButton(onClick = { vm.restart() }, modifier = Modifier.weight(1f)) {
                 Text(stringResource(R.string.new_game))

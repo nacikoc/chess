@@ -40,7 +40,8 @@ android {
         abi {
             isEnable = true
             reset()
-            include("arm64-v8a", "armeabi-v7a")
+            // x86_64: emülatör ve Chromebook. Stockfish binary'si yok, BuiltInEngine devreye girer.
+            include("arm64-v8a", "armeabi-v7a", "x86_64")
             isUniversalApk = false
         }
     }

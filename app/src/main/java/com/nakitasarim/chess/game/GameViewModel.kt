@@ -48,6 +48,16 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     var sideToMove: Side by mutableStateOf(Side.WHITE); private set
     var inCheck by mutableStateOf(false); private set
 
+    /** Beyazın aldığı siyah taşlar / siyahın aldığı beyaz taşlar, değerce büyükten küçüğe. */
+    var capturedByWhite by mutableStateOf<List<Piece>>(emptyList()); private set
+    var capturedByBlack by mutableStateOf<List<Piece>>(emptyList()); private set
+
+    /** Pozitifse beyaz, negatifse siyah önde (piyon cinsinden). */
+    var materialBalance by mutableStateOf(0); private set
+
+    // Hamle sırasına göre alınan taşlar; geri almada senkron kalsın diye yığın olarak tutulur.
+    private val captureStack = ArrayDeque<Piece>()
+
     fun newGame(mode: GameMode, playerSide: Side, level: Int) {
         engineJob?.cancel()
         this.mode = mode
@@ -55,6 +65,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         this.level = level
         board.loadFromFen(Board().fen) // başlangıç pozisyonu
         moveList.clear()
+        captureStack.clear()
         selected = null
         targets = emptySet()
         lastMove = null
@@ -113,11 +124,13 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         if (thinking || moveList.isEmpty()) return
         board.undoMove()
         moveList.removeLast()
+        captureStack.removeLastOrNull()
         if (mode == GameMode.VS_COMPUTER) {
             // oyuncunun sırası gelene kadar geri al
             while (moveList.isNotEmpty() && board.sideToMove != playerSide) {
                 board.undoMove()
                 moveList.removeLast()
+                captureStack.removeLastOrNull()
             }
         }
         selected = null
@@ -154,12 +167,14 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun applyMove(move: Move): Boolean {
+        val victim = victimOf(move)
         val ok = try {
             board.doMove(move)
         } catch (_: Exception) {
             false
         }
         if (!ok) return false
+        captureStack.addLast(victim)
         moveList.add(move)
         lastMove = move.from to move.to
         selected = null
@@ -174,6 +189,21 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         emptyList()
     }
 
+    /**
+     * Hamlenin aldığı taşı hamle OYNANMADAN ÖNCE tespit eder.
+     * Geçerken alma (en passant) hedef kare boş olduğu için ayrıca ele alınır.
+     */
+    private fun victimOf(move: Move): Piece {
+        val direct = board.getPiece(move.to)
+        if (direct != Piece.NONE) return direct
+        val moving = board.getPiece(move.from)
+        val diagonal = move.from.file != move.to.file
+        if (moving.pieceType == PieceType.PAWN && diagonal) {
+            return if (moving.pieceSide == Side.WHITE) Piece.BLACK_PAWN else Piece.WHITE_PAWN
+        }
+        return Piece.NONE
+    }
+
     private fun isPromotionMove(from: Square, to: Square): Boolean {
         val piece = board.getPiece(from)
         if (piece.pieceType != PieceType.PAWN) return false
@@ -184,6 +214,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         squares = readSquares()
         sideToMove = board.sideToMove
         inCheck = board.isKingAttacked
+        refreshCaptures()
         sans = try {
             moveList.toSanArray().toList()
         } catch (_: Exception) {
@@ -195,6 +226,28 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             board.isDraw -> GameResult.DRAW
             else -> null
         }
+    }
+
+    private fun refreshCaptures() {
+        val byWhite = mutableListOf<Piece>()
+        val byBlack = mutableListOf<Piece>()
+        for (p in captureStack) {
+            if (p == Piece.NONE) continue
+            if (p.pieceSide == Side.BLACK) byWhite += p else byBlack += p
+        }
+        val order = compareByDescending<Piece> { pieceValue(it) }
+        capturedByWhite = byWhite.sortedWith(order)
+        capturedByBlack = byBlack.sortedWith(order)
+        materialBalance =
+            byWhite.sumOf { pieceValue(it) } - byBlack.sumOf { pieceValue(it) }
+    }
+
+    private fun pieceValue(piece: Piece): Int = when (piece.pieceType) {
+        PieceType.QUEEN -> 9
+        PieceType.ROOK -> 5
+        PieceType.BISHOP, PieceType.KNIGHT -> 3
+        PieceType.PAWN -> 1
+        else -> 0
     }
 
     private fun readSquares(): List<Piece> =

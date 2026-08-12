@@ -1,9 +1,12 @@
 package com.nakitasarim.chess
 
+import android.graphics.Color as AndroidColor
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,6 +24,13 @@ import com.nakitasarim.chess.ui.theme.ChessTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Android 15+ zaten kenardan kenara çizmeye zorluyor; şeffaf sistem
+        // çubuklarını açıkça isteyip içeriği safeDrawing ile içeri alıyoruz.
+        // Uygulama her zaman koyu tema olduğu için ikonlar açık renk olmalı.
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(AndroidColor.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+        )
         super.onCreate(savedInstanceState)
         setContent {
             ChessTheme {
