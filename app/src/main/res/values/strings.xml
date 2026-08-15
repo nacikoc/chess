@@ -28,6 +28,9 @@
     <string name="new_short">Yeni</string>
     <string name="flip_short">Çevir</string>
     <string name="exit_short">Çık</string>
+    <string name="cancel">Vazgeç</string>
+    <string name="new_game_confirm">Bu oyun silinip yeni bir oyun başlayacak.</string>
+    <string name="tap_to_close">Kapatmak için dokun</string>
     <string-array name="difficulty_names">
         <item>Acemi</item>
         <item>Kolay</item>

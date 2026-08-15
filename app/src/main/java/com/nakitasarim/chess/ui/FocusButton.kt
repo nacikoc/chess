@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.nakitasarim.chess.ui.theme.FocusColor
 import com.nakitasarim.chess.ui.theme.Gold
@@ -30,6 +31,7 @@ import com.nakitasarim.chess.ui.theme.Surface1
  * TV kumandası (D-pad) ile gezinirken odağın nerede olduğunu net gösteren buton:
  * odaklanınca %5 büyür, kalın camgöbeği çerçeve alır ve zemini aydınlanır.
  * [selected]/[primary] doluysa altın zeminle vurgulanır (seçili seçenek / ana eylem).
+ * [shape] varsayılanı korur; telefonun alt yuvası yuvarlak butonlar için CircleShape verir.
  */
 @Composable
 fun FocusButton(
@@ -38,12 +40,12 @@ fun FocusButton(
     selected: Boolean = false,
     primary: Boolean = false,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+    shape: Shape = RoundedCornerShape(12.dp),
     content: @Composable () -> Unit
 ) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
     val scale by animateFloatAsState(if (focused) 1.05f else 1f, label = "focusScale")
-    val shape = RoundedCornerShape(12.dp)
     val filled = selected || primary
     val bg = when {
         filled && focused -> Color(0xFFF6E3B4)

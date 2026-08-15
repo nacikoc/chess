@@ -1,5 +1,12 @@
 package com.nakitasarim.chess.ui
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,6 +14,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -33,20 +42,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.bhlangonijr.chesslib.Piece
@@ -54,6 +72,7 @@ import com.github.bhlangonijr.chesslib.PieceType
 import com.github.bhlangonijr.chesslib.Side
 import com.github.bhlangonijr.chesslib.Square
 import com.nakitasarim.chess.R
+import com.nakitasarim.chess.game.GameMode
 import com.nakitasarim.chess.game.GameResult
 import com.nakitasarim.chess.game.GameViewModel
 import com.nakitasarim.chess.ui.theme.BoardDark
@@ -78,6 +97,14 @@ private fun pieceGlyph(piece: Piece): String? = when (piece.pieceType) {
     else -> null
 }
 
+/** Telefon düzeninin ortak metin rengi ve masa zemini (menüyle aynı degrade). */
+private val Ink = Color(0xFFEDE6DA)
+private val TableGradient = Brush.verticalGradient(
+    0f to Color(0xFF14261D),
+    0.5f to Color(0xFF181712),
+    1f to Color(0xFF121009)
+)
+
 @Composable
 fun GameScreen(vm: GameViewModel, onExit: () -> Unit) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -90,38 +117,372 @@ fun GameScreen(vm: GameViewModel, onExit: () -> Unit) {
                 Spacer(Modifier.width(12.dp))
                 SidePanel(vm, onExit, Modifier.width(panelWidth).fillMaxHeight())
             }
+            // Terfi diyaloğu yalnızca yatay dalda (TV/tablet). Telefonda terfi,
+            // alt yuvanın kendisine dönüşür; ekran ortasında diyalog açılmaz.
+            PromotionDialog(vm)
         } else {
-            // Telefon (dikey): rakip kartı üstte, tahta ortada-aşağıda,
-            // kendi kartın + hamleler + kontroller başparmak menzilinde.
-            val topSide = if (vm.flipped) Side.WHITE else Side.BLACK
-            // Tahtaya kenarlardan 6dp, diğer öğelere 12dp: tahta büyür,
-            // kartlar ve kontroller kenardan rahat bir boşlukta kalır.
+            PortraitGame(vm, onExit)
+        }
+    }
+}
+
+/**
+ * TELEFON (DİKEY) DÜZENİ — "aşağıya yaslanmış masa".
+ *
+ * Üstten alta: başlık şeridi · hamle şeridi · [esneme boşluğu] · rakip şeridi ·
+ * TAHTA · kendi şeridin · yuvarlak kumanda yuvası.
+ *
+ * Tahta ile rakip şeridi tek blok halinde alta yaslanır: cihazdan cihaza değişen
+ * fazlalık yükseklik TEK bir noktada, başparmağın zaten erişemediği üst banda
+ * düşer. S24'te (kullanılabilir ~790dp) tahtanın alt kenarı ekran altından
+ * ~154dp yukarıda kalır; önceki düzende bu 235dp idi.
+ *
+ * Taşma güvenliği: tahtanın büyüklüğü BoxWithConstraints ile min(genişlik,
+ * kalan yükseklik) olarak ölçülür, sabit bir "chrome" sayısına dayanmaz — kısa
+ * ekranlarda tahta küçülür, kumanda yuvası asla ekran dışına itilmez.
+ */
+@Composable
+private fun PortraitGame(vm: GameViewModel, onExit: () -> Unit) {
+    var confirmNew by remember { mutableStateOf(false) }
+    // Sonuç perdesi kapatılabilir olmalı ki mat pozisyonu incelenebilsin.
+    var resultSeen by remember(vm.result) { mutableStateOf(false) }
+
+    val promoting = vm.pendingPromotion != null
+    val resultVeil = vm.result != null && !resultSeen
+    // Geri tuşu önce perdeyi/terfiyi kapatsın; oyundan çıkmak en son çare olsun.
+    BackHandler(enabled = promoting || resultVeil) {
+        if (promoting) vm.cancelPromotion() else resultSeen = true
+    }
+
+    Box(Modifier.fillMaxSize().background(TableGradient)) {
+        BoxWithConstraints(
+            Modifier
+                .fillMaxSize()
+                .safeDrawingPadding()
+                .padding(horizontal = 6.dp, vertical = 6.dp)
+        ) {
+            // Çok kısa ekranlarda (katlanabilir kapak ekranı vb.) hamle şeridi
+            // düşer ve butonlar küçülür; tahta yaşayacak yeri korur.
+            val compact = maxHeight < 660.dp
             val inset = Modifier.padding(horizontal = 6.dp)
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .safeDrawingPadding()
-                    .padding(horizontal = 6.dp, vertical = 6.dp)
-            ) {
+            val topSide = if (vm.flipped) Side.WHITE else Side.BLACK
+
+            Column(Modifier.fillMaxSize()) {
                 GameTopBar(vm, onExit, inset)
-                Spacer(Modifier.height(6.dp))
-                PlayerBarFor(vm, topSide, inset.fillMaxWidth())
-                // Tahta artan boşluğun tamamını yutar; boşluğun çoğu üstte
-                // bırakılarak tahta başparmağın rahat eriştiği banda iner.
-                Column(Modifier.weight(1f).fillMaxWidth()) {
-                    Spacer(Modifier.weight(0.62f))
-                    ChessBoard(vm, Modifier.fillMaxWidth())
-                    Spacer(Modifier.weight(0.38f))
+                if (!compact) {
+                    Spacer(Modifier.height(8.dp))
+                    MoveStrip(vm, inset)
                 }
+                Box(Modifier.fillMaxWidth().weight(1f)) {
+                    Column(
+                        Modifier.fillMaxWidth().align(Alignment.BottomCenter),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        PlayerBarFor(vm, topSide, inset.fillMaxWidth())
+                        Spacer(Modifier.height(6.dp))
+                        BoardSlot(vm, resultVeil) { resultSeen = true }
+                    }
+                }
+                Spacer(Modifier.height(6.dp))
                 PlayerBarFor(vm, topSide.flip(), inset.fillMaxWidth())
-                Spacer(Modifier.height(8.dp))
-                MoveStrip(vm, inset)
-                Spacer(Modifier.height(8.dp))
-                ActionDock(vm, inset)
+                Spacer(Modifier.height(if (compact) 8.dp else 10.dp))
+                PortraitDock(
+                    vm = vm,
+                    compact = compact,
+                    onNew = {
+                        // Sürmekte olan oyun tek dokunuşla silinmesin.
+                        if (vm.sans.isEmpty() || vm.result != null) vm.restart()
+                        else confirmNew = true
+                    },
+                    modifier = inset
+                )
             }
         }
     }
-    PromotionDialog(vm)
+
+    if (confirmNew) {
+        AlertDialog(
+            onDismissRequest = { confirmNew = false },
+            title = { Text(stringResource(R.string.new_game)) },
+            text = { Text(stringResource(R.string.new_game_confirm)) },
+            confirmButton = {
+                FocusButton(
+                    onClick = {
+                        confirmNew = false
+                        vm.restart()
+                    },
+                    primary = true
+                ) { Text(stringResource(R.string.new_game)) }
+            },
+            dismissButton = {
+                FocusButton(onClick = { confirmNew = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+}
+
+/**
+ * Tahta yuvası: kalan yerin izin verdiği en büyük kare. Kare boyutu burada
+ * ölçüldüğü için gölge ve perde tam tahtanın üstüne oturur.
+ */
+@Composable
+private fun BoardSlot(
+    vm: GameViewModel,
+    showResult: Boolean,
+    onDismissResult: () -> Unit
+) {
+    BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        val boardSize = minOf(maxWidth, maxHeight).coerceAtLeast(72.dp)
+        Box(
+            Modifier
+                .size(boardSize)
+                .shadow(14.dp, RoundedCornerShape(10.dp), clip = false)
+        ) {
+            ChessBoard(vm, Modifier.fillMaxSize())
+            BoardVeil(vm, showResult, onDismissResult)
+        }
+    }
+}
+
+/**
+ * Tahta üstü perde: terfi sırasında yönerge, oyun bitince kutlama.
+ * Dikey düzende hiç yer kaplamaz; dokununca kapanır.
+ */
+@Composable
+private fun BoxScope.BoardVeil(
+    vm: GameViewModel,
+    showResult: Boolean,
+    onDismissResult: () -> Unit
+) {
+    val chessFont = rememberChessFont()
+    val promoting = vm.pendingPromotion != null
+    AnimatedVisibility(
+        visible = promoting || showResult,
+        enter = fadeIn(tween(if (promoting) 140 else 420)),
+        exit = fadeOut(tween(140)),
+        modifier = Modifier.matchParentSize()
+    ) {
+        val interaction = remember { MutableInteractionSource() }
+        Box(
+            Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(10.dp))
+                .background(if (promoting) Color(0x8C0E0C09) else Color(0xD60E0C09))
+                .clickable(interactionSource = interaction, indication = null) {
+                    if (promoting) vm.cancelPromotion() else onDismissResult()
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                if (promoting) {
+                    Text(
+                        text = stringResource(R.string.promotion_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Ink
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.cancel),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Ink.copy(alpha = 0.45f)
+                    )
+                } else {
+                    Text(
+                        text = when (vm.result) {
+                            GameResult.WHITE_WINS -> "♔"
+                            GameResult.BLACK_WINS -> "♚"
+                            else -> "½"
+                        },
+                        fontFamily = chessFont,
+                        fontSize = 62.sp,
+                        color = Gold
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        text = statusText(vm),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        color = Color(0xFFF2EADB),
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(R.string.tap_to_close),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Ink.copy(alpha = 0.45f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+private enum class DockMode { PLAY, PROMOTION, OVER }
+
+/**
+ * Alt kumanda yuvası. Ekranın dokunulabilir her şeyi (tahta dışında) burada,
+ * başparmağın dinlenme yayında toplanır. Duruma göre biçim değiştirir:
+ * oyun sırasında üç yuvarlak düğme, terfide dört taş, oyun bitince geniş
+ * "Yeni Oyun". Sık kullanılan "Geri Al" en sağda — sağ başparmağa en yakın.
+ */
+@Composable
+private fun PortraitDock(
+    vm: GameViewModel,
+    compact: Boolean,
+    onNew: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val chessFont = rememberChessFont()
+    val diameter = if (compact) 50.dp else 56.dp
+    val dockMin = if (compact) 54.dp else 76.dp
+    val mode = when {
+        vm.pendingPromotion != null -> DockMode.PROMOTION
+        vm.result != null -> DockMode.OVER
+        else -> DockMode.PLAY
+    }
+    Box(
+        modifier.fillMaxWidth().heightIn(min = dockMin),
+        contentAlignment = Alignment.Center
+    ) {
+        AnimatedContent(
+            targetState = mode,
+            transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(120)) },
+            label = "dock"
+        ) { current ->
+            when (current) {
+                DockMode.PLAY -> Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RoundAction(
+                        glyph = "↻",
+                        label = stringResource(R.string.new_short),
+                        diameter = diameter,
+                        chessFont = chessFont,
+                        showLabel = !compact,
+                        onClick = onNew
+                    )
+                    RoundAction(
+                        glyph = "⇅",
+                        label = stringResource(R.string.flip_short),
+                        diameter = diameter,
+                        chessFont = chessFont,
+                        showLabel = !compact,
+                        onClick = { vm.toggleFlip() }
+                    )
+                    RoundAction(
+                        glyph = "↺",
+                        label = stringResource(R.string.undo),
+                        diameter = diameter,
+                        chessFont = chessFont,
+                        showLabel = !compact,
+                        dim = vm.sans.isEmpty() || vm.thinking,
+                        onClick = { vm.undo() }
+                    )
+                }
+
+                DockMode.PROMOTION -> Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    listOf(
+                        PieceType.QUEEN to "♛",
+                        PieceType.ROOK to "♜",
+                        PieceType.BISHOP to "♝",
+                        PieceType.KNIGHT to "♞"
+                    ).forEach { (type, glyph) ->
+                        RoundAction(
+                            glyph = glyph,
+                            label = "",
+                            diameter = diameter,
+                            chessFont = chessFont,
+                            showLabel = false,
+                            primary = type == PieceType.QUEEN,
+                            glyphSize = 26.sp,
+                            onClick = { vm.promote(type) }
+                        )
+                    }
+                }
+
+                DockMode.OVER -> Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RoundAction(
+                        glyph = "↺",
+                        label = "",
+                        diameter = diameter,
+                        chessFont = chessFont,
+                        showLabel = false,
+                        dim = vm.sans.isEmpty(),
+                        onClick = { vm.undo() }
+                    )
+                    FocusButton(
+                        onClick = onNew,
+                        modifier = Modifier.weight(1f).height(diameter),
+                        primary = true,
+                        contentPadding = PaddingValues(horizontal = 12.dp),
+                        shape = RoundedCornerShape(diameter / 2)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.new_game),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Yuvarlak glif düğmesi + altında küçük etiket. Etiket yazı boyutuyla büyür. */
+@Composable
+private fun RoundAction(
+    glyph: String,
+    label: String,
+    diameter: Dp,
+    chessFont: FontFamily,
+    showLabel: Boolean = true,
+    dim: Boolean = false,
+    primary: Boolean = false,
+    glyphSize: TextUnit = 22.sp,
+    onClick: () -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        FocusButton(
+            onClick = onClick,
+            modifier = Modifier.size(diameter),
+            primary = primary,
+            contentPadding = PaddingValues(0.dp),
+            shape = CircleShape
+        ) {
+            Text(
+                text = glyph,
+                fontFamily = chessFont,
+                fontSize = glyphSize,
+                modifier = Modifier.alpha(if (dim) 0.35f else 1f)
+            )
+        }
+        if (showLabel && label.isNotEmpty()) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = label,
+                fontSize = 10.sp,
+                letterSpacing = 0.4.sp,
+                maxLines = 1,
+                color = Ink.copy(alpha = if (dim) 0.28f else 0.60f)
+            )
+        }
+    }
 }
 
 @Composable
@@ -160,14 +521,23 @@ private fun StatusChip(vm: GameViewModel, modifier: Modifier = Modifier) {
     }
 }
 
-/** Telefonun üst çubuğu: çıkış (kazara basılmasın diye en uzak köşede), başlık, hamle sayacı. */
+/**
+ * Telefonun üst çubuğu: çıkış (kazara basılmasın diye en uzak köşede),
+ * hangi oyunda olduğun ("Bilgisayar · Usta") ve hamle sayacı.
+ */
 @Composable
 private fun GameTopBar(vm: GameViewModel, onExit: () -> Unit, modifier: Modifier = Modifier) {
     val chessFont = rememberChessFont()
+    val difficultyNames = stringArrayResource(R.array.difficulty_names)
+    val label = if (vm.mode == GameMode.VS_COMPUTER) {
+        stringResource(R.string.computer) + " · " + (difficultyNames.getOrNull(vm.level - 1) ?: "")
+    } else {
+        stringResource(R.string.play_two_players)
+    }
     Box(
         modifier
             .fillMaxWidth()
-            .height(44.dp)
+            .heightIn(min = 44.dp)
     ) {
         FocusButton(
             onClick = onExit,
@@ -177,16 +547,20 @@ private fun GameTopBar(vm: GameViewModel, onExit: () -> Unit, modifier: Modifier
             Text("←", fontFamily = chessFont, fontSize = 17.sp)
         }
         Row(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 62.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("♞", fontFamily = chessFont, fontSize = 17.sp, color = Gold)
+            Text("♞", fontFamily = chessFont, fontSize = 15.sp, color = Gold)
             Spacer(Modifier.width(7.dp))
             Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                letterSpacing = 2.sp
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+                letterSpacing = 1.2.sp,
+                color = Ink.copy(alpha = 0.62f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
         Text(
@@ -199,9 +573,10 @@ private fun GameTopBar(vm: GameViewModel, onExit: () -> Unit, modifier: Modifier
 }
 
 /**
- * Hamle şeridi. Oyun bitince aynı yükseklikte altın sonuç afişine dönüşür,
- * böylece sonuç "Yeni" düğmesinin hemen üstünde, başparmak menzilinde belirir.
- * Hamle yokken boş çubuk yerine ipucu gösterir.
+ * Hamle şeridi. Tahtanın ÜSTÜNDE durur: okunur ama dokunulmaz bir bilgi olduğu
+ * için başparmağın erişmediği banda aittir; tahtanın altındaki değerli yer
+ * kumandaya kalır. Oyun bitince aynı yükseklikte altın sonuç afişine dönüşür,
+ * böylece perde kapatıldıktan sonra da sonuç ekranda kalır.
  */
 @Composable
 private fun MoveStrip(vm: GameViewModel, modifier: Modifier = Modifier) {
@@ -223,7 +598,8 @@ private fun MoveStrip(vm: GameViewModel, modifier: Modifier = Modifier) {
                     text = statusText(vm),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF2A2415)
+                    color = Color(0xFF2A2415),
+                    maxLines = 1
                 )
             }
         }
@@ -267,59 +643,16 @@ private fun MoveStrip(vm: GameViewModel, modifier: Modifier = Modifier) {
                     Text(
                         text = "${i + 1}. ${pair.getOrElse(0) { "" }} ${pair.getOrElse(1) { "" }}",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (isLast) Gold else Color(0xFFCFC7B8),
+                        color = if (isLast) Color(0xFF2A2415) else Color(0xFFCFC7B8),
                         fontWeight = if (isLast) FontWeight.SemiBold else FontWeight.Normal,
                         maxLines = 1,
                         modifier = Modifier
                             .clip(RoundedCornerShape(7.dp))
-                            .background(if (isLast) Gold.copy(alpha = 0.14f) else Color(0x14FFFFFF))
+                            .background(if (isLast) Gold else Color(0x14FFFFFF))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }
-        }
-    }
-}
-
-/**
- * Alt kontrol yuvası. Sık kullanılan "Geri Al" sağda — sağ başparmağın
- * doğal dinlenme noktası; "Yeni" en solda, yanlışlıkla basmak zor.
- */
-@Composable
-private fun ActionDock(vm: GameViewModel, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(66.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        DockButton("↻", stringResource(R.string.new_short), Modifier.weight(1f), primary = vm.result != null) {
-            vm.restart()
-        }
-        DockButton("⇅", stringResource(R.string.flip_short), Modifier.weight(1f)) { vm.toggleFlip() }
-        DockButton("↺", stringResource(R.string.undo), Modifier.weight(1.25f)) { vm.undo() }
-    }
-}
-
-@Composable
-private fun DockButton(
-    glyph: String,
-    label: String,
-    modifier: Modifier,
-    primary: Boolean = false,
-    onClick: () -> Unit
-) {
-    val chessFont = rememberChessFont()
-    FocusButton(
-        onClick = onClick,
-        modifier = modifier.fillMaxHeight(),
-        primary = primary,
-        contentPadding = PaddingValues(vertical = 6.dp)
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(glyph, fontFamily = chessFont, fontSize = 20.sp)
-            Spacer(Modifier.height(2.dp))
-            Text(label, fontSize = 11.sp, maxLines = 1)
         }
     }
 }
@@ -510,7 +843,7 @@ private fun BoardCell(vm: GameViewModel, square: Square, cell: Dp, chessFont: Fo
 
 @Composable
 private fun PromotionDialog(vm: GameViewModel) {
-    val pending = vm.pendingPromotion ?: return
+    vm.pendingPromotion ?: return
     val chessFont = rememberChessFont()
     AlertDialog(
         onDismissRequest = { vm.cancelPromotion() },
@@ -526,7 +859,7 @@ private fun PromotionDialog(vm: GameViewModel) {
                 ).forEach { (type, glyph) ->
                     FocusButton(
                         onClick = { vm.promote(type) },
-                        contentPadding = androidx.compose.foundation.layout.PaddingValues(8.dp)
+                        contentPadding = PaddingValues(8.dp)
                     ) {
                         Text(glyph, fontSize = 40.sp, fontFamily = chessFont)
                     }
