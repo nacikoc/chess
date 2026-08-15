@@ -1,5 +1,6 @@
 package com.nakitasarim.chess.ui
 
+import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -45,15 +46,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -714,9 +719,41 @@ private fun SidePanel(vm: GameViewModel, onExit: () -> Unit, modifier: Modifier)
     }
 }
 
+/** Cihaz Android TV mi? Odak davranışı yalnızca kumandalı cihazlarda devreye girer. */
+@Composable
+internal fun rememberIsTv(): Boolean {
+    val context = LocalContext.current
+    return remember {
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+    }
+}
+
+/** Verilen tarafın şahının bulunduğu kare; imlecin atlayacağı çapa. */
+private fun kingSquareOf(squares: List<Piece>, side: Side): Square? {
+    val i = squares.indexOfFirst { it.pieceType == PieceType.KING && it.pieceSide == side }
+    return if (i >= 0) Square.values()[i] else null
+}
+
 @Composable
 private fun ChessBoard(vm: GameViewModel, modifier: Modifier) {
     val chessFont = rememberChessFont()
+
+    // İki kişilik oyunda sıra geçince imleç, oynayacak tarafın şahına atlar;
+    // böylece yeni oyuncu kendi taşlarını aramak için tahtayı baştan geçmez.
+    // Yalnızca TV'de: dokunmatikte imleç zaten yok, ortada çerçeve belirmesin.
+    val followTurn = rememberIsTv() &&
+        vm.mode == GameMode.TWO_PLAYERS &&
+        vm.result == null &&
+        vm.pendingPromotion == null
+    val anchor = if (followTurn) kingSquareOf(vm.squares, vm.sideToMove) else null
+    val anchorFocus = remember { FocusRequester() }
+    LaunchedEffect(anchor, followTurn) {
+        if (anchor == null) return@LaunchedEffect
+        // Çapa kare yeni konumuna yerleşsin, sonra odağı iste.
+        withFrameNanos { }
+        runCatching { anchorFocus.requestFocus() }
+    }
+
     BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
         val size = if (maxWidth < maxHeight) maxWidth else maxHeight
         val cell = (size - 8.dp) / 8
@@ -732,7 +769,13 @@ private fun ChessBoard(vm: GameViewModel, modifier: Modifier) {
                 Row {
                     for (col in 0 until 8) {
                         val square = squareAt(row, col, vm.flipped)
-                        BoardCell(vm, square, cell, chessFont)
+                        BoardCell(
+                            vm = vm,
+                            square = square,
+                            cell = cell,
+                            chessFont = chessFont,
+                            focusRequester = if (square == anchor) anchorFocus else null
+                        )
                     }
                 }
             }
@@ -747,7 +790,13 @@ private fun squareAt(row: Int, col: Int, flipped: Boolean): Square {
 }
 
 @Composable
-private fun BoardCell(vm: GameViewModel, square: Square, cell: Dp, chessFont: FontFamily) {
+private fun BoardCell(
+    vm: GameViewModel,
+    square: Square,
+    cell: Dp,
+    chessFont: FontFamily,
+    focusRequester: FocusRequester? = null
+) {
     val index = square.ordinal
     val file = index % 8
     val rank = index / 8
@@ -775,6 +824,10 @@ private fun BoardCell(vm: GameViewModel, square: Square, cell: Dp, chessFont: Fo
             )
             .then(
                 if (focused) Modifier.border(cell / 16, FocusColor)
+                else Modifier
+            )
+            .then(
+                if (focusRequester != null) Modifier.focusRequester(focusRequester)
                 else Modifier
             )
             .clickable(interactionSource = interaction, indication = null) {

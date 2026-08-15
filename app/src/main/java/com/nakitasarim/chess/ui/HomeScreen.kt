@@ -63,10 +63,7 @@ fun HomeScreen(onStart: (GameMode, Side, Int) -> Unit) {
     val difficultyNames = stringArrayResource(R.array.difficulty_names)
 
     // TV'de açılışta ilk butona odaklan ki kumanda hemen çalışsın
-    val context = LocalContext.current
-    val isTv = remember {
-        context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
-    }
+    val isTv = rememberIsTv()
     val firstFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) {
         if (isTv) runCatching { firstFocus.requestFocus() }

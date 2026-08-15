@@ -226,6 +226,13 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             board.isDraw -> GameResult.DRAW
             else -> null
         }
+        // İki kişilik oyunda tahta her hamlede sırası gelen oyuncuya döner:
+        // telefonu elden ele verirken ve TV'de karşılıklı oynarken taşlar
+        // hep oynayacak kişinin önünde durur. "Çevir" bir sonraki hamleye
+        // kadar geçerli manuel bir istisnadır.
+        if (mode == GameMode.TWO_PLAYERS && result == null) {
+            flipped = sideToMove == Side.BLACK
+        }
     }
 
     private fun refreshCaptures() {
