@@ -87,6 +87,7 @@ import com.nakitasarim.chess.ui.theme.Gold
 import com.nakitasarim.chess.ui.theme.HighlightLast
 import com.nakitasarim.chess.ui.theme.HighlightSelected
 import com.nakitasarim.chess.ui.theme.SelectedBorder
+import com.nakitasarim.chess.ui.theme.TableGradient
 
 @Composable
 fun rememberChessFont(): FontFamily =
@@ -102,13 +103,8 @@ private fun pieceGlyph(piece: Piece): String? = when (piece.pieceType) {
     else -> null
 }
 
-/** Telefon düzeninin ortak metin rengi ve masa zemini (menüyle aynı degrade). */
+/** Telefon düzeninin ortak metin rengi; masa zemini tema dosyasında. */
 private val Ink = Color(0xFFEDE6DA)
-private val TableGradient = Brush.verticalGradient(
-    0f to Color(0xFF14261D),
-    0.5f to Color(0xFF181712),
-    1f to Color(0xFF121009)
-)
 
 @Composable
 fun GameScreen(vm: GameViewModel, onExit: () -> Unit) {

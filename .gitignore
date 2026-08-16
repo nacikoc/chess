@@ -7,3 +7,8 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
+
+# Imzalama sirlari — asla depoya girmemeli
+keystore.properties
+*.jks
+*.keystore

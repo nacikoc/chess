@@ -31,6 +31,17 @@
     <string name="cancel">Vazgeç</string>
     <string name="new_game_confirm">Bu oyun silinip yeni bir oyun başlayacak.</string>
     <string name="tap_to_close">Kapatmak için dokun</string>
+    <string name="about">Hakkında</string>
+    <string name="version">Sürüm</string>
+    <string name="free_software_title">Bu uygulama özgür yazılımdır</string>
+    <string name="free_software_body">Reklam yok, takip yok, ücretli özellik yok. GNU Genel Kamu Lisansı sürüm 3 (GPLv3) ile lisanslanmıştır: uygulamayı kullanma, inceleme, değiştirme ve dağıtma hakkına sahipsin.</string>
+    <string name="source_code">Kaynak kod</string>
+    <string name="open_source_page">Kaynak kod sayfasını aç</string>
+    <string name="third_party">Kullanılan bileşenler</string>
+    <string name="credit_stockfish">Bilgisayara karşı oyundaki yapay zekâ. Değiştirilmeden paketlenmiştir; cihazda çevrimdışı çalışır.</string>
+    <string name="credit_chesslib">Satranç kuralları, hamle üretimi, şah/mat/pat tespiti.</string>
+    <string name="credit_font">Satranç taşı glifleri ve arayüz simgeleri.</string>
+    <string name="credit_compose">Arayüz altyapısı.</string>
     <string-array name="difficulty_names">
         <item>Acemi</item>
         <item>Kolay</item>

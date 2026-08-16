@@ -3,6 +3,7 @@ package com.nakitasarim.chess.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 val Gold = Color(0xFFE8C888)
@@ -14,6 +15,13 @@ val HighlightLast = Color(0x8CE8C24A)
 val HighlightSelected = Color(0x9945804A)
 val SelectedBorder = Color(0xFF7FE84A)
 val FocusColor = Color(0xFF00E5FF)
+
+/** Menü, oyun ve hakkında ekranlarının ortak "masa" zemini. */
+val TableGradient = Brush.verticalGradient(
+    0f to Color(0xFF14261D),
+    0.5f to Color(0xFF181712),
+    1f to Color(0xFF121009)
+)
 
 private val ColorScheme = darkColorScheme(
     primary = Gold,

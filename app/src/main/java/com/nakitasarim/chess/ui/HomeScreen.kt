@@ -55,7 +55,10 @@ import com.nakitasarim.chess.game.GameMode
 import com.nakitasarim.chess.ui.theme.Gold
 
 @Composable
-fun HomeScreen(onStart: (GameMode, Side, Int) -> Unit) {
+fun HomeScreen(
+    onStart: (GameMode, Side, Int) -> Unit,
+    onAbout: () -> Unit = {}
+) {
     var showOptions by remember { mutableStateOf(false) }
     var level by remember { mutableIntStateOf(3) } // varsayılan: Normal
     var side by remember { mutableStateOf(Side.WHITE) }
@@ -220,6 +223,16 @@ fun HomeScreen(onStart: (GameMode, Side, Int) -> Unit) {
             ) {
                 Text("♙♟  ", fontSize = 18.sp, fontFamily = chessFont, color = Gold)
                 Text(stringResource(R.string.play_two_players), fontSize = 18.sp)
+            }
+
+            Spacer(Modifier.height(18.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                FocusButton(
+                    onClick = onAbout,
+                    contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp)
+                ) {
+                    Text(stringResource(R.string.about), fontSize = 14.sp)
+                }
             }
         }
     }

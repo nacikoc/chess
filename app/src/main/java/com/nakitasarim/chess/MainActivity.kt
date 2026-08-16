@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nakitasarim.chess.game.GameViewModel
+import com.nakitasarim.chess.ui.AboutScreen
 import com.nakitasarim.chess.ui.GameScreen
 import com.nakitasarim.chess.ui.HomeScreen
 import com.nakitasarim.chess.ui.theme.ChessTheme
@@ -45,16 +46,28 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+private enum class Screen { HOME, GAME, ABOUT }
+
 @Composable
 fun ChessApp(vm: GameViewModel = viewModel()) {
-    var inGame by rememberSaveable { mutableStateOf(false) }
-    if (inGame) {
-        BackHandler { inGame = false }
-        GameScreen(vm = vm, onExit = { inGame = false })
-    } else {
-        HomeScreen(onStart = { mode, side, level ->
-            vm.newGame(mode, side, level)
-            inGame = true
-        })
+    var screen by rememberSaveable { mutableStateOf(Screen.HOME) }
+    when (screen) {
+        Screen.GAME -> {
+            BackHandler { screen = Screen.HOME }
+            GameScreen(vm = vm, onExit = { screen = Screen.HOME })
+        }
+
+        Screen.ABOUT -> {
+            BackHandler { screen = Screen.HOME }
+            AboutScreen(onBack = { screen = Screen.HOME })
+        }
+
+        Screen.HOME -> HomeScreen(
+            onStart = { mode, side, level ->
+                vm.newGame(mode, side, level)
+                screen = Screen.GAME
+            },
+            onAbout = { screen = Screen.ABOUT }
+        )
     }
 }
