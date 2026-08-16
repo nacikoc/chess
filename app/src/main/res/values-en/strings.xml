@@ -42,6 +42,16 @@
     <string name="credit_chesslib">Chess rules, move generation, check/mate/stalemate detection.</string>
     <string name="credit_font">Chess piece glyphs and interface symbols.</string>
     <string name="credit_compose">UI toolkit.</string>
+    <string name="support">Support</string>
+    <string name="support_title">This app is free, and will stay free</string>
+    <string name="support_body">No ads, no subscription, no locked features. If you like it and want to chip in, you can leave a tip below. Entirely optional.</string>
+    <string name="support_footnote">A tip unlocks nothing — everything is already available to everyone. Payment is handled by Google Play.</string>
+    <string name="support_unavailable">Could not load the tip options right now. Google Play may be unreachable.</string>
+    <string name="support_pending">Opening Google Play…</string>
+    <string name="support_thanks">Thank you!</string>
+    <string name="support_thanks_body">Your support keeps this app ad-free.</string>
+    <string name="retry">Try again</string>
+    <string name="close">Close</string>
     <string-array name="difficulty_names">
         <item>Beginner</item>
         <item>Easy</item>

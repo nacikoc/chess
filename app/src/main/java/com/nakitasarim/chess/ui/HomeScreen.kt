@@ -57,7 +57,8 @@ import com.nakitasarim.chess.ui.theme.Gold
 @Composable
 fun HomeScreen(
     onStart: (GameMode, Side, Int) -> Unit,
-    onAbout: () -> Unit = {}
+    onAbout: () -> Unit = {},
+    onSupport: () -> Unit = {}
 ) {
     var showOptions by remember { mutableStateOf(false) }
     var level by remember { mutableIntStateOf(3) } // varsayılan: Normal
@@ -232,6 +233,13 @@ fun HomeScreen(
                     contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp)
                 ) {
                     Text(stringResource(R.string.about), fontSize = 14.sp)
+                }
+                FocusButton(
+                    onClick = onSupport,
+                    contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp)
+                ) {
+                    Text("♛ ", fontFamily = chessFont, fontSize = 14.sp, color = Gold)
+                    Text(stringResource(R.string.support), fontSize = 14.sp)
                 }
             }
         }

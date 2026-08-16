@@ -1,6 +1,7 @@
 package com.nakitasarim.chess.game
 
 import android.app.Application
+import android.content.pm.PackageManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -57,6 +58,17 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
 
     // Hamle sırasına göre alınan taşlar; geri almada senkron kalsın diye yığın olarak tutulur.
     private val captureStack = ArrayDeque<Piece>()
+
+    /**
+     * Tahtanın kendiliğinden dönmesi yalnızca TV'de anlamlı: iki oyuncu ekranın
+     * karşısında yan yana oturur, taşlar oynayacak kişiye dönmelidir. Telefon
+     * ve tablet ise masaya karşılıklı konur; orada tahtanın dönmesi kafa
+     * karıştırır, sabit kalmalı ("Çevir" ile elle çevrilebilir).
+     */
+    private val autoFlipBoard: Boolean by lazy {
+        getApplication<Application>().packageManager
+            .hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+    }
 
     fun newGame(mode: GameMode, playerSide: Side, level: Int) {
         engineJob?.cancel()
@@ -226,11 +238,9 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             board.isDraw -> GameResult.DRAW
             else -> null
         }
-        // İki kişilik oyunda tahta her hamlede sırası gelen oyuncuya döner:
-        // telefonu elden ele verirken ve TV'de karşılıklı oynarken taşlar
-        // hep oynayacak kişinin önünde durur. "Çevir" bir sonraki hamleye
-        // kadar geçerli manuel bir istisnadır.
-        if (mode == GameMode.TWO_PLAYERS && result == null) {
+        // TV'de iki kişilik oyunda tahta her hamlede sırası gelen oyuncuya döner.
+        // "Çevir" bir sonraki hamleye kadar geçerli manuel bir istisnadır.
+        if (autoFlipBoard && mode == GameMode.TWO_PLAYERS && result == null) {
             flipped = sideToMove == Side.BLACK
         }
     }

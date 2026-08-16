@@ -21,6 +21,7 @@ import com.nakitasarim.chess.game.GameViewModel
 import com.nakitasarim.chess.ui.AboutScreen
 import com.nakitasarim.chess.ui.GameScreen
 import com.nakitasarim.chess.ui.HomeScreen
+import com.nakitasarim.chess.ui.SupportScreen
 import com.nakitasarim.chess.ui.theme.ChessTheme
 
 class MainActivity : ComponentActivity() {
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private enum class Screen { HOME, GAME, ABOUT }
+private enum class Screen { HOME, GAME, ABOUT, SUPPORT }
 
 @Composable
 fun ChessApp(vm: GameViewModel = viewModel()) {
@@ -62,12 +63,18 @@ fun ChessApp(vm: GameViewModel = viewModel()) {
             AboutScreen(onBack = { screen = Screen.HOME })
         }
 
+        Screen.SUPPORT -> {
+            BackHandler { screen = Screen.HOME }
+            SupportScreen(onBack = { screen = Screen.HOME })
+        }
+
         Screen.HOME -> HomeScreen(
             onStart = { mode, side, level ->
                 vm.newGame(mode, side, level)
                 screen = Screen.GAME
             },
-            onAbout = { screen = Screen.ABOUT }
+            onAbout = { screen = Screen.ABOUT },
+            onSupport = { screen = Screen.SUPPORT }
         )
     }
 }

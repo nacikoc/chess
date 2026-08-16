@@ -96,4 +96,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.chesslib)
+    implementation(libs.billing.ktx)
+    // 16 KB sayfa boyutu uyumluluğu için sürüm yükseltmesi (bkz. libs.versions.toml)
+    implementation(libs.androidx.graphics.path)
 }

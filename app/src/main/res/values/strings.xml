@@ -42,6 +42,16 @@
     <string name="credit_chesslib">Satranç kuralları, hamle üretimi, şah/mat/pat tespiti.</string>
     <string name="credit_font">Satranç taşı glifleri ve arayüz simgeleri.</string>
     <string name="credit_compose">Arayüz altyapısı.</string>
+    <string name="support">Destek Ol</string>
+    <string name="support_title">Bu uygulama ücretsiz ve öyle kalacak</string>
+    <string name="support_body">Reklam yok, abonelik yok, kilitli özellik yok. Beğendiysen ve katkıda bulunmak istersen aşağıdan bir bağış bırakabilirsin. Tamamen isteğe bağlı.</string>
+    <string name="support_footnote">Bağış hiçbir özelliği açmaz — her şey zaten herkese açık. Ödeme Google Play üzerinden yapılır.</string>
+    <string name="support_unavailable">Bağış seçenekleri şu anda yüklenemedi. Google Play\'e bağlanılamıyor olabilir.</string>
+    <string name="support_pending">Google Play penceresi açılıyor…</string>
+    <string name="support_thanks">Teşekkürler!</string>
+    <string name="support_thanks_body">Desteğin bu uygulamayı reklamsız tutuyor.</string>
+    <string name="retry">Tekrar dene</string>
+    <string name="close">Kapat</string>
     <string-array name="difficulty_names">
         <item>Acemi</item>
         <item>Kolay</item>

@@ -60,6 +60,7 @@ kurulumda kütüphaneyi diske çıkarır. **Kapatılmamalı** — kapatılırsa
 ## 4. Yükleme öncesi kontrol listesi
 
 - [ ] `versionCode` artırıldı
+- [ ] 16 KB hizalama denetimi geçti: `tools/check-16kb.sh <apk>`
 - [ ] Release derlemesi gerçek cihazda denendi (R8 bir şeyi bozmuş olabilir)
 - [ ] Gizlilik politikası URL'i yayında ([docs/privacy.html](docs/privacy.html))
 - [ ] Veri güvenliği formu dolduruldu (bkz. [docs/play-data-safety.md](docs/play-data-safety.md))
