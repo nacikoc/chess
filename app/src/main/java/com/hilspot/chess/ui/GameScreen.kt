@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.ui
+package com.hilspot.chess.ui
 
 import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
@@ -76,18 +76,18 @@ import com.github.bhlangonijr.chesslib.Piece
 import com.github.bhlangonijr.chesslib.PieceType
 import com.github.bhlangonijr.chesslib.Side
 import com.github.bhlangonijr.chesslib.Square
-import com.nakitasarim.chess.R
-import com.nakitasarim.chess.game.GameMode
-import com.nakitasarim.chess.game.GameResult
-import com.nakitasarim.chess.game.GameViewModel
-import com.nakitasarim.chess.ui.theme.BoardDark
-import com.nakitasarim.chess.ui.theme.BoardLight
-import com.nakitasarim.chess.ui.theme.FocusColor
-import com.nakitasarim.chess.ui.theme.Gold
-import com.nakitasarim.chess.ui.theme.HighlightLast
-import com.nakitasarim.chess.ui.theme.HighlightSelected
-import com.nakitasarim.chess.ui.theme.SelectedBorder
-import com.nakitasarim.chess.ui.theme.TableGradient
+import com.hilspot.chess.R
+import com.hilspot.chess.game.GameMode
+import com.hilspot.chess.game.GameResult
+import com.hilspot.chess.game.GameViewModel
+import com.hilspot.chess.ui.theme.BoardDark
+import com.hilspot.chess.ui.theme.BoardLight
+import com.hilspot.chess.ui.theme.FocusColor
+import com.hilspot.chess.ui.theme.Gold
+import com.hilspot.chess.ui.theme.HighlightLast
+import com.hilspot.chess.ui.theme.HighlightSelected
+import com.hilspot.chess.ui.theme.SelectedBorder
+import com.hilspot.chess.ui.theme.TableGradient
 
 @Composable
 fun rememberChessFont(): FontFamily =

@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""Play Store gorsellerini uretir (ikon, one cikan gorsel, TV banner).
+"""Magaza gorsellerini VE uygulama ici baslatici/TV varliklarini uretir.
 
-Uygulamanin kendi paletini ve paketli DejaVu yazi tipini kullanir, boylece
-magaza gorselleri uygulamanin icindekiyle ayni dile sahip olur.
+Ikisi de ayni paletten ve ayni paketli yazi tipinden ciktigi icin magazada
+gorulen simge ile cihaza kurulunca gorulen simge birebir ayni ata (at
+sembolu) sahip olur. Ikisini ayri ayri elde tutmak kacinilmaz olarak
+birbirinden ayrismalarina yol aciyordu: baslatici simgesi ve TV banner'i
+kaleyken magaza gorselleri attı.
 
 Kullanim:  python tools/make-store-graphics.py
-Cikti:     docs/store/
+Cikti:     docs/store/  ve  app/src/main/res/
 """
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
@@ -13,6 +16,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parent.parent
 FONT = ROOT / "app/src/main/res/font/chess_font.ttf"
 OUT = ROOT / "docs/store"
+RES = ROOT / "app/src/main/res"
 OUT.mkdir(parents=True, exist_ok=True)
 
 GREEN_DARK = (20, 38, 29)
@@ -95,7 +99,7 @@ def make_feature():
     centered(d, (72 + disc / 2, h / 2 + 6), KNIGHT, font(130), GOLD)
 
     d.text((320, 176), "Satranç", font=font(96), fill=CREAM)
-    d.text((326, 292), "Reklamsız · Tamamen çevrimdışı", font=font(34), fill=MUTED)
+    d.text((326, 292), "Tamamen çevrimdışı · Açık kaynak", font=font(34), fill=MUTED)
     d.text((326, 340), "Telefon · Tablet · Android TV", font=font(28), fill=(120, 112, 100))
     img.save(OUT / "feature-1024x500.png")
     return "feature-1024x500.png"
@@ -115,11 +119,74 @@ def make_tv_banner():
     centered(d, (cx, 120 + disc / 2 + 8), KNIGHT, font(200), GOLD)
 
     centered(d, (cx, 500), "Satranç", font(104), CREAM)
-    centered(d, (cx, 580), "Reklamsız · Tamamen çevrimdışı", font(38), MUTED)
+    centered(d, (cx, 580), "Tamamen çevrimdışı · Açık kaynak", font(38), MUTED)
     img.save(OUT / "tv-banner-1280x720.png")
     return "tv-banner-1280x720.png"
+
+
+def fit_glyph(draw, text, box_px, fnt_size_guess=100):
+    """Glifi verilen kutuya sigacak punto ve ortalanmis konumla dondurur."""
+    fnt = font(fnt_size_guess)
+    l, t, r, b = draw.textbbox((0, 0), text, font=fnt)
+    scale = box_px / max(r - l, b - t)
+    return font(max(1, round(fnt_size_guess * scale)))
+
+
+def make_launcher_icons():
+    """Uyarlanabilir simge on plani: 108dp tuval, glif 72dp guvenli alanda.
+
+    Arka plan @color/ic_launcher_background ile duz boyandigi icin burada
+    yalnizca seffaf zeminli altin at uretiliyor.
+    """
+    # mdpi 1x -> xxxhdpi 4x
+    densities = {"mdpi": 1, "hdpi": 1.5, "xhdpi": 2, "xxhdpi": 3, "xxxhdpi": 4}
+    written = []
+    for name, factor in densities.items():
+        size = round(108 * factor)
+        img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        # 60dp: 72dp'lik guvenli alanin icinde rahat duracak kadar kucuk
+        fnt = fit_glyph(d, KNIGHT, 60 * factor)
+        centered(d, (size / 2, size / 2), KNIGHT, fnt, GOLD)
+        out = RES / f"mipmap-{name}" / "ic_launcher_foreground.png"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        img.save(out)
+        written.append(out)
+    return written
+
+
+def make_tv_banner_resource():
+    """Cihazdaki TV banner'i (320x180dp) — magaza banner'iyla ayni dil."""
+    written = []
+    for name, factor in {"mdpi": 1, "hdpi": 1.5, "xhdpi": 2}.items():
+        w, h = round(320 * factor), round(180 * factor)
+        img = vertical_gradient((w, h), GREEN_DARK, INK)
+        d = ImageDraw.Draw(img)
+
+        disc = round(96 * factor)
+        cx, cy = round(74 * factor), h // 2
+        disc_img = radial_disc(disc, GREEN_LIT, GREEN)
+        img.paste(disc_img, (cx - disc // 2, cy - disc // 2), disc_img)
+        d.ellipse(
+            [cx - disc / 2, cy - disc / 2, cx + disc / 2, cy + disc / 2],
+            outline=GOLD, width=max(1, round(1.5 * factor))
+        )
+        centered(d, (cx, cy), KNIGHT, fit_glyph(d, KNIGHT, 56 * factor), GOLD)
+
+        d.text((round(140 * factor), round(66 * factor)), "Satranç",
+               font=font(round(34 * factor)), fill=CREAM)
+        d.text((round(142 * factor), round(108 * factor)), "Çevrimdışı · Açık kaynak",
+               font=font(round(13 * factor)), fill=MUTED)
+
+        out = RES / f"drawable-{name}" / "tv_banner.png"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        img.save(out)
+        written.append(out)
+    return written
 
 
 if __name__ == "__main__":
     for name in (make_icon(), make_feature(), make_tv_banner()):
         print("uretildi:", (OUT / name).relative_to(ROOT))
+    for path in make_launcher_icons() + make_tv_banner_resource():
+        print("uretildi:", path.relative_to(ROOT))

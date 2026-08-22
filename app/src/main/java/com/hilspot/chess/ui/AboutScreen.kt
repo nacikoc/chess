@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.ui
+package com.hilspot.chess.ui
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -36,12 +36,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nakitasarim.chess.BuildConfig
-import com.nakitasarim.chess.R
-import com.nakitasarim.chess.ui.theme.Gold
-import com.nakitasarim.chess.ui.theme.TableGradient
+import com.hilspot.chess.BuildConfig
+import com.hilspot.chess.R
+import com.hilspot.chess.ui.theme.Gold
+import com.hilspot.chess.ui.theme.TableGradient
 
 private const val SOURCE_URL = "https://github.com/nacikoc/chess"
+private const val DEVELOPER = "Naci Koç"
+private const val CONTACT_EMAIL = "nakisoft@gmail.com"
 
 /**
  * Hakkında / lisanslar. GPLv3 yükümlülüğü gereği uygulamanın özgür yazılım
@@ -104,6 +106,25 @@ fun AboutScreen(onBack: () -> Unit) {
                 )
 
                 Spacer(Modifier.height(18.dp))
+                InfoCard {
+                    LabelledValue(stringResource(R.string.developer), DEVELOPER)
+                    Spacer(Modifier.height(10.dp))
+                    LabelledValue(stringResource(R.string.contact), CONTACT_EMAIL)
+                    Spacer(Modifier.height(10.dp))
+                    // TV'de e-posta istemcisi olmayabilir; adres yukarıda düz
+                    // metin olarak da duruyor, buton yalnızca kolaylık.
+                    FocusButton(onClick = {
+                        runCatching {
+                            context.startActivity(
+                                Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$CONTACT_EMAIL"))
+                            )
+                        }.onFailure { if (it !is ActivityNotFoundException) throw it }
+                    }) {
+                        Text(stringResource(R.string.send_email), fontSize = 14.sp)
+                    }
+                }
+
+                Spacer(Modifier.height(14.dp))
                 InfoCard {
                     Text(
                         text = stringResource(R.string.free_software_title),
@@ -191,6 +212,16 @@ private fun InfoCard(content: @Composable () -> Unit) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.Top) { content() }
+    }
+}
+
+/** Üstte küçük gri etiket, altında değer — künye satırları için. */
+@Composable
+private fun LabelledValue(label: String, value: String) {
+    Column(Modifier.fillMaxWidth()) {
+        Text(label, style = MaterialTheme.typography.labelLarge, color = MutedInk)
+        Spacer(Modifier.height(4.dp))
+        Text(value, style = MaterialTheme.typography.bodyMedium, color = Gold)
     }
 }
 

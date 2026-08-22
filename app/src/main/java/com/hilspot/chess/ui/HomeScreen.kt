@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.ui
+package com.hilspot.chess.ui
 
 import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedContent
@@ -50,9 +50,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.bhlangonijr.chesslib.Side
-import com.nakitasarim.chess.R
-import com.nakitasarim.chess.game.GameMode
-import com.nakitasarim.chess.ui.theme.Gold
+import com.hilspot.chess.R
+import com.hilspot.chess.game.GameMode
+import com.hilspot.chess.ui.theme.Gold
 
 @Composable
 fun HomeScreen(

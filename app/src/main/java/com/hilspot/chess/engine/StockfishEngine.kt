@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.engine
+package com.hilspot.chess.engine
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex

@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.ui
+package com.hilspot.chess.ui
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.RepeatMode
@@ -37,10 +37,10 @@ import androidx.compose.ui.unit.sp
 import com.github.bhlangonijr.chesslib.Piece
 import com.github.bhlangonijr.chesslib.PieceType
 import com.github.bhlangonijr.chesslib.Side
-import com.nakitasarim.chess.R
-import com.nakitasarim.chess.game.GameMode
-import com.nakitasarim.chess.game.GameViewModel
-import com.nakitasarim.chess.ui.theme.Gold
+import com.hilspot.chess.R
+import com.hilspot.chess.game.GameMode
+import com.hilspot.chess.game.GameViewModel
+import com.hilspot.chess.ui.theme.Gold
 
 /** Taş tipinin Unicode glifi (renkten bağımsız; renk fill ile verilir). */
 internal fun chessGlyph(type: PieceType): String = when (type) {

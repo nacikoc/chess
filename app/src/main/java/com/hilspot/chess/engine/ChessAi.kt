@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.engine
+package com.hilspot.chess.engine
 
 import android.content.Context
 import java.io.File

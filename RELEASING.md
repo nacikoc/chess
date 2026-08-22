@@ -1,5 +1,16 @@
 # Yayın süreci
 
+| | |
+|---|---|
+| Paket adı | `com.hilspot.chess` |
+| Geliştirici | Naci Koç · nakisoft@gmail.com |
+| Fiyat | Ücretsiz (isteğe bağlı uygulama içi destek) |
+
+> **Paket adı ilk yüklemeden sonra asla değişmez.** Aynı şekilde bir uygulama
+> ücretsiz yayımlandıktan sonra ücretliye çevrilemez. İkisi de şu an doğru;
+> yükleme öncesi son kez `app/build.gradle.kts` içindeki `applicationId`'yi
+> teyit et.
+
 ## 1. İmzalama anahtarı (bir kereye mahsus)
 
 > **Bu anahtarı kaybedersen uygulamayı bir daha güncelleyemezsin.** Play'de
@@ -22,7 +33,15 @@ keyAlias=chess
 keyPassword=BURAYA_ANAHTAR_PAROLASI
 ```
 
-Dosya yoksa release derlemesi imzasız üretilir; debug derlemesi etkilenmez.
+Dosya yoksa release derlemesi **imzasız** üretilir; debug derlemesi etkilenmez.
+Gradle bunu hata olarak bildirmez — imzasız bir AAB'yi Play Console yükleme
+anında reddeder. `bundleRelease`'ten sonra imzayı doğrula:
+
+```bash
+keytool -printcert -jarfile app/build/outputs/bundle/release/app-release.aab
+```
+
+Çıktı boşsa paket imzasızdır.
 
 Play Console'da **Play App Signing**'i açman önerilir: yükleme anahtarın
 çalınırsa değiştirilebilir, Google dağıtım imzasını kendi tutar.
@@ -59,7 +78,8 @@ kurulumda kütüphaneyi diske çıkarır. **Kapatılmamalı** — kapatılırsa
 
 ## 4. Yükleme öncesi kontrol listesi
 
-- [ ] `versionCode` artırıldı
+- [ ] `versionCode` artırıldı (ilk yüklemede 1 kalabilir)
+- [ ] AAB imzalı (`keytool -printcert -jarfile ...` çıktı veriyor)
 - [ ] 16 KB hizalama denetimi geçti: `tools/check-16kb.sh <apk>`
 - [ ] Release derlemesi gerçek cihazda denendi (R8 bir şeyi bozmuş olabilir)
 - [ ] Gizlilik politikası URL'i yayında ([docs/privacy.html](docs/privacy.html))
@@ -68,6 +88,8 @@ kurulumda kütüphaneyi diske çıkarır. **Kapatılmamalı** — kapatılırsa
 - [ ] Ekran görüntüleri: telefon + Android TV
 - [ ] TV için: 1280x720 banner, leanback beyanı (manifest'te mevcut)
 - [ ] Kaynak kod deposu herkese açık (GPLv3 yükümlülüğü)
+- [ ] Play Billing sürümü güncel (Play, 8'in altını kabul etmiyor)
+- [ ] Console tarafındaki tüm adımlar: [docs/play-console-yukleme.md](docs/play-console-yukleme.md)
 
 ## 5. Release derlemesini yerelde test etme
 

@@ -4,6 +4,9 @@ Reklamsız, takipsiz, tamamen çevrimdışı bir satranç uygulaması. Tek kod
 tabanıyla Android telefon, tablet ve Android TV'de (kumanda/D-pad desteğiyle)
 çalışır.
 
+Geliştiren: **Naci Koç** · İletişim: <nakisoft@gmail.com> · Paket adı:
+`com.hilspot.chess`
+
 > Bu uygulama, Play Store'daki satranç oyunlarının reklam yoğunluğundan
 > rahatsız olup "reklamsız olsun" diye başlanmış kişisel bir projedir.
 
@@ -18,7 +21,10 @@ tabanıyla Android telefon, tablet ve Android TV'de (kumanda/D-pad desteğiyle)
 - Oyuncu kartları: alınan taşlar, materyal farkı, sıra ve şah göstergesi
 - Hamle listesi (SAN), geri alma, tahta çevirme, terfi seçimi
 - Şah / mat / pat / beraberlik tespiti, oyun sonu perdesi
-- İnternet izni yok, hesap yok, veri toplanmaz
+- Hesap yok, veri toplanmaz, oyunun hiçbir yeri internete çıkmaz. (İnternet
+  izni yalnızca Destek Ol ekranındaki Google Play faturalandırması için
+  bulunur; Play Billing kütüphanesi manifest'e `INTERNET` ve
+  `ACCESS_NETWORK_STATE` ekler.)
 
 ## Mimari
 

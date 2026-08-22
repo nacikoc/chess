@@ -7,11 +7,18 @@ Aşağıdaki metinler bu sınırların içinde.
 
 ## Türkçe (tr-TR) — varsayılan dil
 
-**Uygulama adı** (17/30)
+**Uygulama adı** (20/30)
 
 ```
-Satranç — Reklamsız
+Satranç — Çevrimdışı
 ```
+
+> **"Reklamsız" başlığa yazılamaz.** Play'in meta veri politikası başlıkta,
+> simgede ve geliştirici adında promosyon/fiyat iddiasını yasaklıyor;
+> "reklamsız / ad-free / free / #1 / en iyi" bunların arasında ve uygulama
+> doğrudan reddediliyor. Reklamsız olduğu bilgisi **açıklama metninde**
+> serbest — aşağıda öyle duruyor. "Çevrimdışı" bir olgu bildirimi olduğu
+> için başlıkta sorun değil.
 
 **Kısa açıklama** (79/80)
 
@@ -65,18 +72,22 @@ kendiniz görebilirsiniz.
 
 DESTEK
 Uygulama ücretsiz ve öyle kalacak. Beğenirseniz uygulama içinden isteğe bağlı
-bir bağış bırakabilirsiniz. Bağış hiçbir özelliği açmaz; her şey zaten
+küçük bir destek bırakabilirsiniz. Destek hiçbir özelliği açmaz; her şey zaten
 herkese açıktır.
+
+GELİŞTİRİCİ
+Bu uygulama Naci Koç tarafından geliştirilmiştir. Görüş, hata bildirimi ve
+önerileriniz için: nakisoft@gmail.com
 ```
 
 ---
 
 ## English (en-US)
 
-**App name** (16/30)
+**App name** (15/30)
 
 ```
-Chess — No Ads
+Chess — Offline
 ```
 
 **Short description** (76/80)
@@ -129,6 +140,10 @@ SUPPORT
 The app is free and will stay free. If you like it you can leave an optional
 tip from inside the app. A tip unlocks nothing; everything is already
 available to everyone.
+
+DEVELOPER
+This app is developed by Naci Koç. For feedback, bug reports and suggestions:
+nakisoft@gmail.com
 ```
 
 ---
@@ -137,12 +152,15 @@ available to everyone.
 
 | Alan | Değer |
 |---|---|
+| Paket adı (applicationId) | `com.hilspot.chess` — **yükledikten sonra değişmez** |
+| Geliştirici adı (hesap adı) | Naci Koç |
+| Uygulama türü | Oyun · **Ücretsiz** (fiyat sonradan ücretliye çevrilemez) |
 | Kategori | Oyunlar → Tahta oyunu (Board) |
 | Etiketler | satranç, tahta oyunu, çevrimdışı, reklamsız |
 | İletişim e-postası | nakisoft@gmail.com |
 | Gizlilik politikası | https://nacikoc.github.io/chess/privacy.html |
 | Reklam içeriyor mu | Hayır |
-| Uygulama içi satın alma | Evet (isteğe bağlı bağış) |
+| Uygulama içi satın alma | Evet (isteğe bağlı destek) |
 | İçerik derecelendirmesi | Herkes / 3+ |
 
 ## Grafik varlıklar

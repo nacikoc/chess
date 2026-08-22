@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.ui
+package com.hilspot.chess.ui
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -23,9 +23,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import com.nakitasarim.chess.ui.theme.FocusColor
-import com.nakitasarim.chess.ui.theme.Gold
-import com.nakitasarim.chess.ui.theme.Surface1
+import com.hilspot.chess.ui.theme.FocusColor
+import com.hilspot.chess.ui.theme.Gold
+import com.hilspot.chess.ui.theme.Surface1
 
 /**
  * TV kumandası (D-pad) ile gezinirken odağın nerede olduğunu net gösteren buton:

@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.support
+package com.hilspot.chess.support
 
 import android.app.Activity
 import android.app.Application
@@ -99,12 +99,16 @@ class SupportViewModel(app: Application) : AndroidViewModel(app) {
         client.queryProductDetailsAsync(
             QueryProductDetailsParams.newBuilder().setProductList(products).build()
         ) { result, details ->
-            if (result.responseCode != BillingClient.BillingResponseCode.OK || details.isEmpty()) {
+            // Play Billing 8'den beri geri çağrı ProductDetails listesi yerine
+            // QueryProductDetailsResult veriyor (getirilemeyen ürünleri de
+            // ayrıca bildiriyor); bizi ilgilendiren getirilebilenler.
+            val fetched = details.productDetailsList
+            if (result.responseCode != BillingClient.BillingResponseCode.OK || fetched.isEmpty()) {
                 state = UiState.Unavailable
                 return@queryProductDetailsAsync
             }
             // Play'in döndürdüğü sırayı değil, kendi ucuzdan pahalıya sıramızı koru.
-            val byId = details.associateBy { it.productId }
+            val byId = fetched.associateBy { it.productId }
             val tiers = PRODUCT_IDS.mapNotNull { id ->
                 val d = byId[id] ?: return@mapNotNull null
                 val price = d.oneTimePurchaseOfferDetails?.formattedPrice ?: return@mapNotNull null

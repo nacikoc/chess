@@ -1,7 +1,7 @@
 # Play Console — Veri güvenliği formu cevapları
 
 Play Console → Uygulama içeriği → Veri güvenliği. Aşağıdakiler bu uygulamanın
-doğru cevaplarıdır. **Bağış özelliği eklendikten sonra bile değişmez**, çünkü
+doğru cevaplarıdır. **Destek özelliği eklendikten sonra bile değişmez**, çünkü
 ödemeyi Google Play yürütür ve geliştirici hiçbir kişisel veriye erişmez.
 
 ## Veri toplama
@@ -16,7 +16,7 @@ gerek kalmaz. Gerekçe:
 - Sunucu yok, hesap yok, analitik SDK'sı yok, reklam SDK'sı yok, çökme
   raporlama SDK'sı yok.
 - Oyun durumu yalnızca bellekte tutulur, diske bile yazılmaz.
-- Google Play Billing üzerinden yapılan bağışta ödeme verisini **Google**
+- Google Play Billing üzerinden yapılan destek ödemesinde veriyi **Google**
   toplar. Play'in veri güvenliği rehberine göre, Google Play'in kendi ödeme
   altyapısının işlediği veriler geliştiricinin beyanına dahil edilmez.
 
@@ -32,9 +32,9 @@ gerek kalmaz. Gerekçe:
 **Reklamlar:** Uygulama reklam içermiyor → "Uygulamanız reklam içeriyor mu?"
 sorusuna **Hayır**.
 
-**Uygulama içi satın alma:** Bağış ürünleri eklendiğinde Play bunu otomatik
+**Uygulama içi satın alma:** Destek ürünleri eklendiğinde Play bunu otomatik
 algılar; mağaza sayfasında "Uygulama içi satın alma" etiketi görünür. Bu
-beklenen durumdur — bağışlar isteğe bağlıdır ve hiçbir özellik açmaz.
+beklenen durumdur — destekler isteğe bağlıdır ve hiçbir özellik açmaz.
 Açıklama metninde bunun açıkça yazılması, kullanıcı şikâyetini önler.
 
 **Hedef kitle ve içerik:** Her yaşa uygun. Çocuklara özel olarak hedeflenmiyor
@@ -42,7 +42,11 @@ ancak çocuklar için de güvenli (veri toplanmıyor, reklam yok, dış bağlant
 yalnızca Hakkında ekranındaki kaynak kod adresi).
 
 **İçerik derecelendirmesi:** Şiddet, korku, kumar, kullanıcı etkileşimi yok.
-Anket "Herkes / 3+" ile sonuçlanır.
+Anket "Herkes / 3+" ile sonuçlanır. **Ancak IARC anketindeki "uygulama dijital
+satın alma sunuyor mu?" sorusuna EVET denmeli** — destek ürünleri birer
+uygulama içi satın almadır. Bunu atlarsan derecelendirme yanlış beyan sayılır;
+cevap derecelendirmeyi 3+'tan çıkarmaz, yalnızca mağaza sayfasına "Uygulama içi
+satın alma" etiketi ekler.
 
 **Devlet uygulaması / finans uygulaması:** Hayır.
 

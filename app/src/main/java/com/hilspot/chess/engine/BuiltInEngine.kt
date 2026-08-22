@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.engine
+package com.hilspot.chess.engine
 
 import com.github.bhlangonijr.chesslib.Board
 import com.github.bhlangonijr.chesslib.Piece

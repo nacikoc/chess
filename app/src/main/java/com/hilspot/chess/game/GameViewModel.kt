@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.game
+package com.hilspot.chess.game
 
 import android.app.Application
 import android.content.pm.PackageManager
@@ -16,8 +16,8 @@ import com.github.bhlangonijr.chesslib.Square
 import com.github.bhlangonijr.chesslib.move.Move
 import com.github.bhlangonijr.chesslib.move.MoveGenerator
 import com.github.bhlangonijr.chesslib.move.MoveList
-import com.nakitasarim.chess.engine.ChessAi
-import com.nakitasarim.chess.engine.EngineFactory
+import com.hilspot.chess.engine.ChessAi
+import com.hilspot.chess.engine.EngineFactory
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

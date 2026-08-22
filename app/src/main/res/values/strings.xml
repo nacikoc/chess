@@ -33,6 +33,9 @@
     <string name="tap_to_close">Kapatmak için dokun</string>
     <string name="about">Hakkında</string>
     <string name="version">Sürüm</string>
+    <string name="developer">Geliştiren</string>
+    <string name="contact">İletişim</string>
+    <string name="send_email">E-posta gönder</string>
     <string name="free_software_title">Bu uygulama özgür yazılımdır</string>
     <string name="free_software_body">Reklam yok, takip yok, ücretli özellik yok. GNU Genel Kamu Lisansı sürüm 3 (GPLv3) ile lisanslanmıştır: uygulamayı kullanma, inceleme, değiştirme ve dağıtma hakkına sahipsin.</string>
     <string name="source_code">Kaynak kod</string>
@@ -44,9 +47,9 @@
     <string name="credit_compose">Arayüz altyapısı.</string>
     <string name="support">Destek Ol</string>
     <string name="support_title">Bu uygulama ücretsiz ve öyle kalacak</string>
-    <string name="support_body">Reklam yok, abonelik yok, kilitli özellik yok. Beğendiysen ve katkıda bulunmak istersen aşağıdan bir bağış bırakabilirsin. Tamamen isteğe bağlı.</string>
-    <string name="support_footnote">Bağış hiçbir özelliği açmaz — her şey zaten herkese açık. Ödeme Google Play üzerinden yapılır.</string>
-    <string name="support_unavailable">Bağış seçenekleri şu anda yüklenemedi. Google Play\'e bağlanılamıyor olabilir.</string>
+    <string name="support_body">Reklam yok, abonelik yok, kilitli özellik yok. Beğendiysen ve katkıda bulunmak istersen aşağıdan küçük bir destek bırakabilirsin. Tamamen isteğe bağlı.</string>
+    <string name="support_footnote">Destek hiçbir özelliği açmaz — her şey zaten herkese açık. Ödeme Google Play üzerinden yapılır.</string>
+    <string name="support_unavailable">Destek seçenekleri şu anda yüklenemedi. Google Play\'e bağlanılamıyor olabilir.</string>
     <string name="support_pending">Google Play penceresi açılıyor…</string>
     <string name="support_thanks">Teşekkürler!</string>
     <string name="support_thanks_body">Desteğin bu uygulamayı reklamsız tutuyor.</string>

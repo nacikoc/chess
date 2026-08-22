@@ -1,4 +1,4 @@
-package com.nakitasarim.chess
+package com.hilspot.chess
 
 import android.graphics.Color as AndroidColor
 import android.os.Bundle
@@ -17,12 +17,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.nakitasarim.chess.game.GameViewModel
-import com.nakitasarim.chess.ui.AboutScreen
-import com.nakitasarim.chess.ui.GameScreen
-import com.nakitasarim.chess.ui.HomeScreen
-import com.nakitasarim.chess.ui.SupportScreen
-import com.nakitasarim.chess.ui.theme.ChessTheme
+import com.hilspot.chess.game.GameViewModel
+import com.hilspot.chess.ui.AboutScreen
+import com.hilspot.chess.ui.GameScreen
+import com.hilspot.chess.ui.HomeScreen
+import com.hilspot.chess.ui.SupportScreen
+import com.hilspot.chess.ui.theme.ChessTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

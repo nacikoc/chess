@@ -6,7 +6,10 @@ lifecycle = "2.9.1"
 activityCompose = "1.10.1"
 composeBom = "2025.06.01"
 chesslib = "1.3.4"
-billing = "7.1.1"
+# Play, 31 Ağustos 2026'dan sonra 8'in altındaki sürümlerle yükleme kabul
+# etmiyor. 9.x'e çıkıldı: 8'e göre ek maliyeti yok, bir sonraki son tarihe
+# kadar da süre kazandırıyor.
+billing = "9.1.0"
 # Compose BOM 1.0.1'i getiriyor; o sürüm 16 KB sayfa boyutuna uyumlu değil
 # ve Play yüklemesini engelliyor. Hizalama düzeltmesi 1.1.0'da.
 graphicsPath = "1.1.0"
@@ -21,7 +24,10 @@ androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 chesslib = { group = "com.github.bhlangonijr", name = "chesslib", version.ref = "chesslib" }
-billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
+# billing-ktx değil: ktx modülü Kotlin 2.3 metadata'sıyla derlenmiş ve bu
+# projenin Kotlin 2.1.20'siyle okunamıyor. Kod zaten yalnızca geri çağrı
+# tabanlı Java API'sini kullanıyor, ktx uzantılarına ihtiyaç yok.
+billing = { group = "com.android.billingclient", name = "billing", version.ref = "billing" }
 androidx-graphics-path = { group = "androidx.graphics", name = "graphics-path", version.ref = "graphicsPath" }
 
 [plugins]

@@ -23,11 +23,11 @@ val buildingBundle = gradle.startParameter.taskNames.any {
 }
 
 android {
-    namespace = "com.nakitasarim.chess"
+    namespace = "com.hilspot.chess"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.nakitasarim.chess"
+        applicationId = "com.hilspot.chess"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -96,7 +96,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.chesslib)
-    implementation(libs.billing.ktx)
+    implementation(libs.billing)
     // 16 KB sayfa boyutu uyumluluğu için sürüm yükseltmesi (bkz. libs.versions.toml)
     implementation(libs.androidx.graphics.path)
 }

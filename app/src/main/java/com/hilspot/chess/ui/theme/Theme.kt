@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.ui.theme
+package com.hilspot.chess.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme

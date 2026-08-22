@@ -1,4 +1,4 @@
-package com.nakitasarim.chess.ui
+package com.hilspot.chess.ui
 
 import android.app.Activity
 import android.content.Context
@@ -42,10 +42,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.nakitasarim.chess.R
-import com.nakitasarim.chess.support.SupportViewModel
-import com.nakitasarim.chess.ui.theme.Gold
-import com.nakitasarim.chess.ui.theme.TableGradient
+import com.hilspot.chess.R
+import com.hilspot.chess.support.SupportViewModel
+import com.hilspot.chess.ui.theme.Gold
+import com.hilspot.chess.ui.theme.TableGradient
 
 private tailrec fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
