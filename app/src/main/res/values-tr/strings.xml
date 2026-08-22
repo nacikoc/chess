@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Satranç</string>
+    <string name="play_vs_computer">Bilgisayara Karşı</string>
+    <string name="play_two_players">İki Kişilik</string>
+    <string name="difficulty">Zorluk</string>
+    <string name="play_as">Renk seçimi</string>
+    <string name="white">Beyaz</string>
+    <string name="black">Siyah</string>
+    <string name="start_game">Oyunu Başlat</string>
+    <string name="new_game">Yeni Oyun</string>
+    <string name="undo">Geri Al</string>
+    <string name="flip_board">Tahtayı Çevir</string>
+    <string name="white_to_move">Sıra: Beyaz</string>
+    <string name="black_to_move">Sıra: Siyah</string>
+    <string name="checkmate_white_wins">Şah mat! Beyaz kazandı</string>
+    <string name="checkmate_black_wins">Şah mat! Siyah kazandı</string>
+    <string name="stalemate">Pat — Berabere</string>
+    <string name="draw">Berabere</string>
+    <string name="check">Şah!</string>
+    <string name="thinking">Düşünüyor…</string>
+    <string name="promotion_title">Terfi — taş seç</string>
+    <string name="back">Geri</string>
+    <string name="tagline">Reklamsız · Tamamen çevrimdışı</string>
+    <string name="first_move_hint">İlk hamleni yap</string>
+    <string name="you">Sen</string>
+    <string name="computer">Bilgisayar</string>
+    <string name="new_short">Yeni</string>
+    <string name="flip_short">Çevir</string>
+    <string name="exit_short">Çık</string>
+    <string name="cancel">Vazgeç</string>
+    <string name="new_game_confirm">Bu oyun silinip yeni bir oyun başlayacak.</string>
+    <string name="tap_to_close">Kapatmak için dokun</string>
+    <string name="about">Hakkında</string>
+    <string name="version">Sürüm</string>
+    <string name="developer">Geliştiren</string>
+    <string name="contact">İletişim</string>
+    <string name="send_email">E-posta gönder</string>
+    <string name="free_software_title">Bu uygulama özgür yazılımdır</string>
+    <string name="free_software_body">Reklam yok, takip yok, ücretli özellik yok. GNU Genel Kamu Lisansı sürüm 3 (GPLv3) ile lisanslanmıştır: uygulamayı kullanma, inceleme, değiştirme ve dağıtma hakkına sahipsin.</string>
+    <string name="source_code">Kaynak kod</string>
+    <string name="open_source_page">Kaynak kod sayfasını aç</string>
+    <string name="third_party">Kullanılan bileşenler</string>
+    <string name="credit_stockfish">Bilgisayara karşı oyundaki yapay zekâ. Değiştirilmeden paketlenmiştir; cihazda çevrimdışı çalışır.</string>
+    <string name="credit_chesslib">Satranç kuralları, hamle üretimi, şah/mat/pat tespiti.</string>
+    <string name="credit_font">Satranç taşı glifleri ve arayüz simgeleri.</string>
+    <string name="credit_compose">Arayüz altyapısı.</string>
+    <string name="support">Destek Ol</string>
+    <string name="support_title">Bu uygulama ücretsiz ve öyle kalacak</string>
+    <string name="support_body">Reklam yok, abonelik yok, kilitli özellik yok. Beğendiysen ve katkıda bulunmak istersen aşağıdan küçük bir destek bırakabilirsin. Tamamen isteğe bağlı.</string>
+    <string name="support_footnote">Destek hiçbir özelliği açmaz — her şey zaten herkese açık. Ödeme Google Play üzerinden yapılır.</string>
+    <string name="support_unavailable">Destek seçenekleri şu anda yüklenemedi. Google Play\'e bağlanılamıyor olabilir.</string>
+    <string name="support_pending">Google Play penceresi açılıyor…</string>
+    <string name="support_thanks">Teşekkürler!</string>
+    <string name="support_thanks_body">Desteğin bu uygulamayı reklamsız tutuyor.</string>
+    <string name="retry">Tekrar dene</string>
+    <string name="close">Kapat</string>
+    <string-array name="difficulty_names">
+        <item>Acemi</item>
+        <item>Kolay</item>
+        <item>Normal</item>
+        <item>Orta</item>
+        <item>İyi</item>
+        <item>Zor</item>
+        <item>Usta</item>
+        <item>Büyükusta</item>
+    </string-array>
+</resources>

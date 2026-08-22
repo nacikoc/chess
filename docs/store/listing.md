@@ -5,7 +5,7 @@ Aşağıdaki metinler bu sınırların içinde.
 
 ---
 
-## Türkçe (tr-TR) — varsayılan dil
+## Türkçe (tr-TR) — eklenen dil
 
 **Uygulama adı** (20/30)
 
@@ -82,7 +82,7 @@ Bu uygulama Naci Koç tarafından geliştirilmiştir. Görüş, hata bildirimi v
 
 ---
 
-## English (en-US)
+## English (en-US) — varsayılan dil
 
 **App name** (15/30)
 

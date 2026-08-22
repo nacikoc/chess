@@ -27,7 +27,12 @@ oluşturmaktır:
   Play App Signing'i açarsan yalnızca *yükleme* anahtarını kaybetme riski
   kalır, o da Google'a başvurarak değiştirilebilir. **Aç.**
 - **Varsayılan dil** — sonradan değiştirilebilir ama tüm çevirileri etkiler.
-  Türkçe seç.
+  **İngilizce (en-US) seç**, sonra Türkçe'yi ek dil olarak ekle. Varsayılan
+  dil, kendi dilinde çeviri bulunmayan herkesin gördüğü metindir: İngilizce
+  seçersen Alman da Japon da anlayabileceği bir sayfa görür, Türk kullanıcı
+  yine Türkçe görür. Türkçe seçersen tersi olur ve Türkiye dışındaki herkes
+  anlamadığı bir sayfayla karşılaşır. Uygulamanın içi de aynı mantıkla
+  kuruldu (`values/` İngilizce, `values-tr/` Türkçe).
 
 ---
 
@@ -75,7 +80,7 @@ Console → **Uygulama oluştur**:
 | Alan | Değer |
 |---|---|
 | Uygulama adı | `Satranç — Çevrimdışı` (başlıkta "Reklamsız" yasak — bkz. [listing.md](store/listing.md)) |
-| Varsayılan dil | Türkçe (tr-TR) |
+| Varsayılan dil | **İngilizce (en-US)** — sonra Türkçe'yi ek dil olarak gir |
 | Uygulama mı, oyun mu | **Oyun** |
 | Ücretsiz mi, ücretli mi | **Ücretsiz** |
 | Beyanlar | Geliştirici Programı Politikaları + ABD ihracat yasaları → işaretle |

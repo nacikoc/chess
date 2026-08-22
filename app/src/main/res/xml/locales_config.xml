@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Uygulamanin destekledigi diller. Android 13+ bu listeyi Ayarlar > Uygulamalar
+  > Satranc > Dil ekraninda gosterir; kullanici cihaz dilinden bagimsiz olarak
+  uygulamanin dilini secebilir. Daha eski surumlerde yok sayilir.
+
+  Sira onemli degil; varsayilan (values/) Ingilizce oldugu icin listede
+  olmayan bir cihaz dili Ingilizceye duser.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="tr" />
+</locale-config>
