@@ -12,3 +12,8 @@ captures/
 keystore.properties
 *.jks
 *.keystore
+
+# Yerel arac ayarlari: cihaz seri numaralari, LAN adresleri ve makineye ozel
+# yollar iceriyor. Su an yalnizca kullanicinin genel gitignore'u sayesinde
+# disarida kaliyor; depo herkese acilacagi icin burada da acikca yaziyoruz.
+.claude/settings.local.json
