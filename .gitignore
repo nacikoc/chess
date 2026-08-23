@@ -17,3 +17,8 @@ keystore.properties
 # yollar iceriyor. Su an yalnizca kullanicinin genel gitignore'u sayesinde
 # disarida kaliyor; depo herkese acilacagi icin burada da acikca yaziyoruz.
 .claude/settings.local.json
+# settings.json da depoya girmiyor: icindeki izin kurallari (adb, taskkill,
+# gradlew) bu makinedeki gelistirme kolayligi icin. Depo herkese acilacagi
+# icin, klonlayan herkesin Claude'una bu izinleri otomatik vermek dogru
+# olmaz. Dosya yerelde calismaya devam eder; git'e girmesi gerekmiyor.
+.claude/settings.json
