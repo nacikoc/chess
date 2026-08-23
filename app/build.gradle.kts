@@ -86,6 +86,40 @@ android {
     }
 }
 
+// Stockfish binary'leri depoda tutulmuyor (bkz. .gitignore). Eksik olduklarinda
+// uygulama COKMEZ -- ChessAi.kt sessizce cok daha zayif BuiltInEngine'e duser.
+// Yani hatasiz, imzali ama motoru sakat bir yayin paketi uretilebilir ve bu
+// ancak oynayinca fark edilir. Yayin derlemesini bu yuzden bilerek durduruyoruz.
+// x86_64 muaf: o ABI icin zaten binary paketlenmiyor, BuiltInEngine tasarim geregi.
+// Kontrol bilerek yapilandirma zamaninda, ayri bir Gradle gorevi olarak degil:
+// Kotlin DSL'de doLast lambdasi betik nesnesini ortuk yakaliyor ve bu
+// configuration cache ile serilestirilemiyor. Burada yapinca hem o sorun yok,
+// hem de derleme hic baslamadan aninda hata veriyor.
+val stockfishAbis = listOf("arm64-v8a", "armeabi-v7a")
+val buildingRelease = gradle.startParameter.taskNames.any {
+    it.contains("release", ignoreCase = true) || it.contains("bundle", ignoreCase = true)
+}
+if (buildingRelease) {
+    val missing = stockfishAbis
+        .map { abi -> layout.projectDirectory.file("src/main/jniLibs/$abi/libstockfish.so").asFile }
+        .filter { !it.exists() || it.length() == 0L }
+    if (missing.isNotEmpty()) {
+        throw GradleException(
+            buildString {
+                appendLine("Stockfish binary'leri eksik:")
+                missing.forEach { appendLine("  - " + it.name + "  (" + it.parentFile.name + ")") }
+                appendLine()
+                appendLine("Bunlar depoda tutulmuyor (bkz. .gitignore). Uretmek icin:")
+                appendLine("    bash tools/build-stockfish.sh")
+                appendLine()
+                appendLine("Bu kontrol olmasaydi derleme BASARILI olurdu, ama uygulama")
+                appendLine("guclu motor yerine cok daha zayif BuiltInEngine ile yayinlanirdi")
+                appendLine("-- ChessAi.kt eksik binary'de sessizce ona duser.")
+            }
+        )
+    }
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

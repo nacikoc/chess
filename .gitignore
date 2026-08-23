@@ -22,3 +22,13 @@ keystore.properties
 # icin, klonlayan herkesin Claude'una bu izinleri otomatik vermek dogru
 # olmaz. Dosya yerelde calismaya devam eder; git'e girmesi gerekmiyor.
 .claude/settings.json
+
+# Stockfish binary'leri depoda tutulmuyor: her yeniden derleme git gecmisine
+# kalici olarak ~150 MB ekliyordu ve depo 255 MB'a cikmisti. GPLv3 acisindan
+# sorun degil -- karsilik gelen kaynak degistirilmemis Stockfish 17.1 ve
+# derleme yontemi tools/build-stockfish.sh ile aciklanmis durumda (GPLv3
+# s6(d): kaynagi baska bir sunucudan sunmak serbest).
+#
+# Temiz bir klonda motoru elde etmek icin: bash tools/build-stockfish.sh
+# Dosyalar eksikse Gradle release derlemesini hata vererek durdurur.
+app/src/main/jniLibs/*/libstockfish.so

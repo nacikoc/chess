@@ -104,13 +104,27 @@ Requires JDK 21 and the Android SDK (compileSdk 36). minSdk is 26 (Android 8.0).
 For release builds and Play publishing see [RELEASING.md](RELEASING.md) and
 [docs/play-console-yukleme.md](docs/play-console-yukleme.md).
 
-**Rebuilding Stockfish.** The bundled binaries are not the official releases —
-those are 4 KB page-aligned and Play rejects them for apps targeting Android
-15+. They were rebuilt from unmodified Stockfish 17.1 source with
-`-Wl,-z,max-page-size=16384`. The exact procedure is
-[`tools/build-stockfish.sh`](tools/build-stockfish.sh), and
-[`tools/check-16kb.sh`](tools/check-16kb.sh) verifies alignment of every native
-library in an APK or AAB.
+### The Stockfish binaries are not in this repository
+
+`app/src/main/jniLibs/*/libstockfish.so` is gitignored. Each rebuild added
+~150 MB to git history permanently, and the repo had grown to 255 MB. Build
+them yourself — it takes one command:
+
+```bash
+bash tools/build-stockfish.sh
+```
+
+This compiles **unmodified Stockfish 17.1** with the Android NDK and
+`-Wl,-z,max-page-size=16384`. That flag matters: the official Stockfish Android
+binaries are 4 KB page-aligned, and Google Play rejects those for apps
+targeting Android 15+. [`tools/check-16kb.sh`](tools/check-16kb.sh) verifies
+the alignment of every native library in a finished APK or AAB.
+
+Release builds **fail immediately** if the binaries are missing. Without that
+check the build would succeed and quietly ship the far weaker `BuiltInEngine`
+fallback — a defect you would only notice by playing a game.
+
+Debug builds still work without them; you just get the fallback engine.
 
 ### License
 
@@ -224,13 +238,29 @@ JDK 21 ve Android SDK gerekir (compileSdk 36). minSdk 26 (Android 8.0). Yayın
 derlemesi ve Play süreci için [RELEASING.md](RELEASING.md) ve
 [docs/play-console-yukleme.md](docs/play-console-yukleme.md).
 
-**Stockfish'i yeniden derlemek.** Paketlenen binary'ler resmî sürümler değildir:
-resmî Android binary'leri 4 KB sayfa hizalı ve Android 15+ hedefleyen
-uygulamalarda Play bunları reddediyor. Değiştirilmemiş Stockfish 17.1
-kaynağından `-Wl,-z,max-page-size=16384` ile yeniden derlendiler. Birebir
-prosedür [`tools/build-stockfish.sh`](tools/build-stockfish.sh) dosyasında;
-[`tools/check-16kb.sh`](tools/check-16kb.sh) ise bir APK veya AAB içindeki tüm
-yerel kütüphanelerin hizalamasını denetler.
+### Stockfish binary'leri bu depoda yok
+
+`app/src/main/jniLibs/*/libstockfish.so` gitignore'da. Her yeniden derleme git
+geçmişine kalıcı olarak ~150 MB ekliyordu ve depo 255 MB'a çıkmıştı. Kendin
+üretmen tek komut:
+
+```bash
+bash tools/build-stockfish.sh
+```
+
+Bu betik **değiştirilmemiş Stockfish 17.1**'i Android NDK ile ve
+`-Wl,-z,max-page-size=16384` bayrağıyla derler. O bayrak kritik: resmî
+Stockfish Android binary'leri 4 KB sayfa hizalı ve Android 15+ hedefleyen
+uygulamalarda Play bunları reddediyor.
+[`tools/check-16kb.sh`](tools/check-16kb.sh) bitmiş bir APK veya AAB içindeki
+tüm yerel kütüphanelerin hizalamasını denetler.
+
+Binary'ler eksikse yayın derlemesi **anında hata verip durur**. O kontrol
+olmasaydı derleme başarılı olur ve uygulama sessizce çok daha zayıf
+`BuiltInEngine` yedeğiyle yayımlanırdı — ancak oynayınca fark edilecek bir
+kusur.
+
+Debug derlemesi binary olmadan da çalışır, sadece yedek motoru kullanırsın.
 
 ### Lisans
 
