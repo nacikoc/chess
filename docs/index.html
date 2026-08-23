@@ -4,57 +4,223 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Satranç — Reklamsız, çevrimdışı satranç</title>
+<meta name="description" content="Reklamsız, takipsiz, tamamen çevrimdışı bir Android satranç uygulaması. Telefon, tablet ve Android TV. Açık kaynak, GPLv3.">
+<link rel="icon" href="store/icon-512.png">
 <style>
-  :root { color-scheme: light dark; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    line-height: 1.65; max-width: 44rem; margin: 0 auto; padding: 2rem 1.25rem 4rem;
-    background: #fbfaf7; color: #1d1b16;
+  /* Renkler degisken olarak tanimli; koyu tema kurallari dosyanin neresinde
+     olursa olsun sira yuzunden ezilmesin. */
+  :root {
+    color-scheme: light dark;
+    --bg: #fbfaf7;
+    --fg: #1d1b16;
+    --muted: #5c564c;
+    --card-bg: #ffffff;
+    --card-border: #e6e1d6;
+    --link: #7a5c1e;
+    --rule: #ded8cb;
+    --hero-from: #1e4032;
+    --hero-to: #14261d;
+    --gold: #8a6a1f;
+    --chip-bg: #efe9dc;
   }
   @media (prefers-color-scheme: dark) {
-    body { background: #171512; color: #ede6da; }
-    a { color: #e8c888; }
-    .card { background: #23201b; border-color: #333; }
+    :root {
+      --bg: #141210;
+      --fg: #ede6da;
+      --muted: #a79f92;
+      --card-bg: #201d19;
+      --card-border: #35302a;
+      --link: #e8c888;
+      --rule: #35302a;
+      --gold: #e8c888;
+      --chip-bg: #2a251e;
+    }
   }
-  h1 { font-size: 1.9rem; margin-bottom: .25rem; }
-  h2 { font-size: 1.15rem; margin-top: 2.25rem; }
-  .sub { opacity: .65; margin-top: 0; }
-  .card { background: #fff; border: 1px solid #e6e1d6; border-radius: 12px; padding: 1rem 1.25rem; }
-  a { color: #7a5c1e; }
-  ul { padding-left: 1.2rem; }
-  li { margin: .35rem 0; }
-  code { font-size: .95em; }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.65;
+    background: var(--bg);
+    color: var(--fg);
+  }
+  .wrap { max-width: 62rem; margin: 0 auto; padding: 0 1.25rem; }
+  a { color: var(--link); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    background: linear-gradient(160deg, var(--hero-from), var(--hero-to) 70%, #0f0d0b);
+    color: #ede6da;
+    padding: 3.5rem 1.25rem 3rem;
+    text-align: center;
+  }
+  .hero img.icon {
+    width: 108px; height: 108px; border-radius: 26px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.45);
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 6vw, 2.9rem);
+    margin: 1.1rem 0 .3rem; letter-spacing: -.01em;
+  }
+  .hero p.tag { margin: 0 auto; max-width: 34rem; color: #c9c0b1; font-size: 1.05rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin-top: 1.4rem; }
+  .chip {
+    background: rgba(232,200,136,.12);
+    border: 1px solid rgba(232,200,136,.35);
+    color: #e8c888;
+    border-radius: 999px; padding: .3rem .85rem; font-size: .85rem;
+  }
+
+  /* ---------- Bolumler ---------- */
+  section { padding: 3rem 0 .5rem; }
+  h2 { font-size: 1.35rem; margin: 0 0 1.1rem; }
+  h2 .dot { color: var(--gold); }
+
+  .shots {
+    display: grid; gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  .shots img {
+    width: 100%; height: auto; display: block;
+    border-radius: 12px; border: 1px solid var(--card-border);
+  }
+  .tvshot { margin-top: 1rem; }
+  .tvshot img {
+    width: 100%; height: auto; display: block;
+    border-radius: 12px; border: 1px solid var(--card-border);
+  }
+  figcaption { color: var(--muted); font-size: .85rem; margin-top: .5rem; text-align: center; }
+
+  .grid {
+    display: grid; gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+  .card {
+    background: var(--card-bg); color: var(--fg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 1.1rem 1.25rem;
+  }
+  .card h3 { margin: 0 0 .4rem; font-size: 1.02rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+
+  .levels { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
+  .level {
+    background: var(--chip-bg); border-radius: 6px;
+    padding: .18rem .55rem; font-size: .82rem; color: var(--fg);
+  }
+
+  ul.links { list-style: none; padding: 0; margin: 0; }
+  ul.links li { margin: .45rem 0; }
+
+  footer {
+    margin-top: 3.5rem; border-top: 1px solid var(--rule);
+    padding: 2rem 0 3rem; color: var(--muted); font-size: .92rem;
+  }
+  footer strong { color: var(--fg); }
 </style>
 </head>
 <body>
 
-<h1>Satranç</h1>
-<p class="sub">Reklamsız, takipsiz, tamamen çevrimdışı · Telefon, tablet ve Android TV</p>
+<header class="hero">
+  <img class="icon" src="store/icon-512.png" alt="Satranç uygulama simgesi">
+  <h1>Satranç</h1>
+  <p class="tag">Reklamsız, takipsiz, tamamen çevrimdışı satranç.<br>
+  Telefon, tablet ve Android TV.</p>
+  <div class="chips">
+    <span class="chip">Reklam yok</span>
+    <span class="chip">Çevrimdışı</span>
+    <span class="chip">Stockfish 17.1</span>
+    <span class="chip">Açık kaynak · GPLv3</span>
+  </div>
+</header>
 
-<div class="card">
-  Reklam yok, abonelik yok, kilitli özellik yok, hesap yok. Yapay zekâ rakip
-  (Stockfish) cihazınızda çalışır; oyun için internet bağlantısı gerekmez.
+<div class="wrap">
+
+  <section>
+    <h2><span class="dot">·</span> Nasıl görünüyor</h2>
+    <div class="shots">
+      <figure style="margin:0">
+        <img src="store/screenshots/phone-2-menu.png" alt="Ana menü">
+      </figure>
+      <figure style="margin:0">
+        <img src="store/screenshots/phone-1-oyun.png" alt="Oyun ekranı">
+      </figure>
+      <figure style="margin:0">
+        <img src="store/screenshots/phone-3-zorluk.png" alt="Zorluk seçimi">
+      </figure>
+      <figure style="margin:0">
+        <img src="store/screenshots/phone-4-mat.png" alt="Mat ekranı">
+      </figure>
+    </div>
+    <figure class="tvshot">
+      <img src="store/screenshots/tv-1-oyun.png" alt="Android TV'de oyun ekranı">
+      <figcaption>Android TV — kumandayla oynanabilir, odak göstergesi belirgin</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="dot">·</span> Ne var</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Bilgisayara karşı</h3>
+        <p>Stockfish 17.1, 8 zorluk seviyesi. Alt seviyelerde arama derinliği
+        kasıtlı olarak sınırlı — motor gerçekten hata yapar, yenilebilir.</p>
+        <div class="levels">
+          <span class="level">Acemi</span><span class="level">Kolay</span>
+          <span class="level">Normal</span><span class="level">Orta</span>
+          <span class="level">İyi</span><span class="level">Zor</span>
+          <span class="level">Usta</span><span class="level">Büyükusta</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>İki kişilik</h3>
+        <p>Aynı cihazda karşılıklı oyun. TV'de tahta sırası gelen oyuncuya döner
+        ve imleç onun tarafına atlar; telefon ve tablette tahta sabit kalır.</p>
+      </div>
+      <div class="card">
+        <h3>Tek elle oynanır</h3>
+        <p>Telefonda tahta ve kontroller alta yaslanır, kontroller başparmak
+        menzilindeki yuvarlak yuvada durur.</p>
+      </div>
+      <div class="card">
+        <h3>Oyun sırasında</h3>
+        <p>Alınan taşlar ve materyal farkı, SAN hamle listesi, geri alma, tahta
+        çevirme, terfi seçimi, şah/mat/pat/beraberlik tespiti.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="dot">·</span> Gizlilik</h2>
+    <div class="card">
+      <p style="color:var(--fg)">Hesap yok, veri toplanmıyor, oyununa dair hiçbir şey
+      cihazdan çıkmıyor. Yapay zekâ rakip tamamen cihazında çalışır.</p>
+      <p style="margin-top:.7rem">Manifest'te <code>INTERNET</code> izni görünür; tek sebebi
+      isteğe bağlı destek ekranının Google Play faturalandırmasını kullanmasıdır.
+      Oyunun kendisi hiçbir bağlantı açmaz — ve bunu iddia etmiyoruz, kaynak kod
+      herkese açık, kendiniz bakabilirsiniz.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="dot">·</span> Bağlantılar</h2>
+    <ul class="links">
+      <li><a href="privacy.html">Gizlilik politikası</a> — Türkçe ve İngilizce</li>
+      <li><a href="https://github.com/nacikoc/chess">Kaynak kod — GitHub</a></li>
+      <li><a href="https://github.com/official-stockfish/Stockfish">Stockfish satranç motoru</a></li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>Bu uygulama <strong>Naci Koç</strong> tarafından geliştirilmiştir.
+    İletişim: <a href="mailto:nakisoft@gmail.com">nakisoft@gmail.com</a></p>
+    <p>Özgür yazılımdır ve GNU Genel Kamu Lisansı sürüm 3 (GPLv3) ile
+    lisanslanmıştır. Uygulamayı kullanma, inceleme, değiştirme ve dağıtma
+    hakkına sahipsiniz.</p>
+  </footer>
+
 </div>
-
-<h2>Bağlantılar</h2>
-<ul>
-  <li><a href="privacy.html">Gizlilik politikası</a> (Türkçe ve İngilizce)</li>
-  <li><a href="https://github.com/nacikoc/chess">Kaynak kod — GitHub</a></li>
-</ul>
-
-<h2>Lisans</h2>
-<p>
-  Bu uygulama özgür yazılımdır ve GNU Genel Kamu Lisansı sürüm 3 (GPLv3) ile
-  lisanslanmıştır. Uygulamayı kullanma, inceleme, değiştirme ve dağıtma
-  hakkına sahipsiniz. Kaynak kodun tamamı yukarıdaki adreste herkese açıktır.
-</p>
-
-<h2>İletişim</h2>
-<p>
-  Bu uygulama <strong>Naci Koç</strong> tarafından geliştirilmiştir.
-  Soru, hata bildirimi ve önerileriniz için:
-  <a href="mailto:nakisoft@gmail.com">nakisoft@gmail.com</a>
-</p>
 
 </body>
 </html>
