@@ -104,6 +104,12 @@ Requires JDK 21 and the Android SDK (compileSdk 36). minSdk is 26 (Android 8.0).
 For release builds and Play publishing see [RELEASING.md](RELEASING.md) and
 [docs/play-console-yukleme.md](docs/play-console-yukleme.md).
 
+> **Picking this project up cold?** Read
+> [docs/gelistirici-notlari.md](docs/gelistirici-notlari.md) first (Turkish). It
+> records the decisions and the traps that are not visible in the code — why
+> Stockfish runs as a separate process, why the binaries are not in git, why the
+> store title cannot say "ad-free", and what breaks if you get those wrong.
+
 ### The Stockfish binaries are not in this repository
 
 `app/src/main/jniLibs/*/libstockfish.so` is gitignored. Each rebuild added
